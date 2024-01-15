@@ -71,6 +71,7 @@ def extract_text_from_cv(contents, filename):
         return ''
     return text
 
+
 def extract_text_from_url(url):
     """
     Extract text from job description URL.
