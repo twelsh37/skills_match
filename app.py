@@ -62,15 +62,14 @@ def extract_text_from_cv(contents, filename):
         if 'doc' in filename:
             text = docx2txt.process(BytesIO(decoded))
         elif 'pdf' in filename:
-            reader = PyPDF2.PdfFileReader(BytesIO(decoded))
-            text = ' '.join([reader.getPage(i).extractText() for i in range(reader.getNumPages())])
+            reader = PyPDF2.PdfReader(BytesIO(decoded))
+            text = ' '.join([reader.pages[i].extract_text() for i in range(len(reader.pages))])
         else:
             raise Exception('Invalid file type')
     except Exception as e:
         print(e)
         return ''
     return text
-
 
 def extract_text_from_url(url):
     """
