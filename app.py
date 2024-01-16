@@ -21,6 +21,8 @@ app = dash.Dash(
     __name__, external_stylesheets=[dbc.themes.BOOTSTRAP], title="skills_warrior"
 )
 
+server = app.server
+
 app.layout = dbc.Container(
     fluid=True,
     style={"padding": "10px"},
