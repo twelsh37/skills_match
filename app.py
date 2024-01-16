@@ -84,60 +84,6 @@ app.layout = dbc.Container(
             dbc.Col(html.H4('Similarity Score'), md=3)
         ]),
 
-        # dbc.Row(
-        #     [
-        #         dbc.Col(
-        #             dcc.Textarea(
-        #                 id="job-description",
-        #                 placeholder="Enter job description URL or text here...",
-        #                 style={"width": "100%", "height": "100%"},
-        #             ),
-        #             md=9,
-        #         ),
-        #         dbc.Col(
-        #             dbc.Card(
-        #                 [
-        #                     html.Div(
-        #                         id='similarity-score',
-        #                         style={
-        #                             'display': 'flex',
-        #                             'justifyContent': 'center',
-        #                             'height': '100%',
-        #                             'alignItems': 'center',
-        #                             'color': 'black',
-        #                             'fontFamily': 'Arial',
-        #                             'fontSize': 'calc(35vh * 0.7)',  # 70% of the card's height
-        #                             'height': '35vh',  # Set the height of the card
-        #                         }
-        #                     ),
-        #                     style = {'height': '35vh'},  # Ensure the card has a fixed height
-        #                     md = 3
-        #                     ),
-        #     ],              )
-        #                     html.Label('Adjust threshold',
-        #                                style={'fontSize': '20px',
-        #                                       'textAlign': 'left',
-        #                                       'marginLeft': '20px',
-        #                                       'marginBottom': '5px'
-        #                                       }
-        #                                ),
-        #                     dcc.Slider(
-        #                         id='threshold-slider',
-        #                         min=0,
-        #                         max=100,
-        #                         step=1,
-        #                         value=60,  # Default threshold value
-        #                         marks={i: '{}%'.format(i) for i in range(0, 101, 10)},
-        #                     )
-        #                 ],
-        #                 style={"height": "100%"},
-        #             ),
-        #             md=3,
-        #         ),
-        #     ],
-        #     style={"display": "flex", "align-items": "stretch"},
-        # ),
-
         dbc.Row(
             [
                 dbc.Col(
