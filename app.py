@@ -55,10 +55,12 @@ app.layout = dbc.Container(
                 ),
             ]
         ),
-        dbc.Row([
-            dbc.Col(html.H4("Your CV"), md=9),
-            dbc.Col(html.H4('Matching Skills'), md=3)
-        ]),
+        dbc.Row(
+            [
+                dbc.Col(html.H4("Your CV"), md=9),
+                dbc.Col(html.H4("Matching Skills"), md=3),
+            ]
+        ),
         dbc.Row(
             [
                 dbc.Col(
@@ -73,19 +75,19 @@ app.layout = dbc.Container(
                     dbc.Card(
                         [
                             dcc.Graph(id="radar-graph"),
-
                         ],
-                        style={"height": "35vh"}
+                        style={"height": "35vh"},
                     ),
                     md=3,
                 ),
             ]
         ),
-        dbc.Row([
-            dbc.Col(html.H4("Job Description"), md=9),
-            dbc.Col(html.H4('Similarity Score'), md=3)
-        ]),
-
+        dbc.Row(
+            [
+                dbc.Col(html.H4("Job Description"), md=9),
+                dbc.Col(html.H4("Similarity Score"), md=3),
+            ]
+        ),
         dbc.Row(
             [
                 dbc.Col(
@@ -100,35 +102,35 @@ app.layout = dbc.Container(
                     dbc.Card(
                         [
                             html.Div(
-                                id='similarity-score',
+                                id="similarity-score",
                                 style={
-                                    'display': 'flex',
-                                    'justifyContent': 'center',
-                                    'height': '100%',
-                                    'alignItems': 'center',
-                                    'color': 'black',
-                                    'fontFamily': 'Arial',
-                                    'fontSize': 'calc(35vh * 0.8)',  # 70% of the card's height
-                                    'height': '35vh',  # Set the height of the card
-                                }
+                                    "display": "flex",
+                                    "justifyContent": "center",
+                                    "height": "100%",
+                                    "alignItems": "center",
+                                    "color": "black",
+                                    "fontFamily": "Arial",
+                                    "fontSize": "calc(35vh * 0.8)",  # 70% of the card's height
+                                    "height": "35vh",  # Set the height of the card
+                                },
                             ),
                             html.Label(
-                                'Adjust threshold',
+                                "Adjust threshold",
                                 style={
-                                    'fontSize': '20px',
-                                    'textAlign': 'left',
-                                    'marginLeft': '20px',
-                                    'marginBottom': '5px'
-                                }
+                                    "fontSize": "20px",
+                                    "textAlign": "left",
+                                    "marginLeft": "20px",
+                                    "marginBottom": "5px",
+                                },
                             ),
                             dcc.Slider(
-                                id='threshold-slider',
+                                id="threshold-slider",
                                 min=0,
                                 max=100,
                                 step=1,
                                 value=60,  # Default threshold value
-                                marks={i: '{}%'.format(i) for i in range(0, 101, 10)},
-                            )
+                                marks={i: "{}%".format(i) for i in range(0, 101, 10)},
+                            ),
                         ],
                         style={"height": "100%"},
                     ),
@@ -137,7 +139,6 @@ app.layout = dbc.Container(
             ],
             style={"display": "flex", "align-items": "stretch"},
         ),
-
         dbc.Row(
             [
                 dbc.Col(
@@ -219,41 +220,39 @@ def update_cv_text(contents, filename):
 
 
 @app.callback(
-    [Output('radar-graph', 'figure'), Output('similarity-score', 'children')],
-    [Input('analyze-button', 'n_clicks'), Input('threshold-slider', 'value')],
-    [State('cv-text', 'value'), State('job-description', 'value')]
+    [Output("radar-graph", "figure"), Output("similarity-score", "children")],
+    [Input("analyze-button", "n_clicks"), Input("threshold-slider", "value")],
+    [State("cv-text", "value"), State("job-description", "value")],
 )
 def update_radar_graph(n_clicks, threshold, cv_text, job_description):
     """
     Update radar graph and similarity score when the analyze button is clicked.
     """
     if n_clicks > 0 and cv_text and job_description:
-        if 'http' in job_description:
+        if "http" in job_description:
             job_description = extract_text_from_url(job_description)
         cv_keywords = extract_keywords(cv_text)
         job_keywords = extract_keywords(job_description)
         common_keywords = cv_keywords & job_keywords
         fig = go.Figure()
-        fig.add_trace(go.Scatterpolar(
-            r=[common_keywords[keyword] for keyword in common_keywords],
-            theta=list(common_keywords.keys()),
-            fill='toself',
-            name='CV'
-        ))
-        fig.add_trace(go.Scatterpolar(
-            r=[job_keywords[keyword] for keyword in common_keywords],
-            theta=list(common_keywords.keys()),
-            fill='toself',
-            name='Job Description'
-        ))
+        fig.add_trace(
+            go.Scatterpolar(
+                r=[common_keywords[keyword] for keyword in common_keywords],
+                theta=list(common_keywords.keys()),
+                fill="toself",
+                name="CV",
+            )
+        )
+        fig.add_trace(
+            go.Scatterpolar(
+                r=[job_keywords[keyword] for keyword in common_keywords],
+                theta=list(common_keywords.keys()),
+                fill="toself",
+                name="Job Description",
+            )
+        )
         fig.update_layout(
-            polar=dict(
-                radialaxis=dict(
-                    visible=True,
-                    range=[0, 5]
-                )
-            ),
-            showlegend=True
+            polar=dict(radialaxis=dict(visible=True, range=[0, 5])), showlegend=True
         )
         similarity_score = len(common_keywords) / len(job_keywords) * 100
         similarity_score_text = f"{similarity_score:.2f}%"
@@ -261,14 +260,28 @@ def update_radar_graph(n_clicks, threshold, cv_text, job_description):
         # similarity_score_html = html.H4(similarity_score_text, style={'color': similarity_score_color, 'font-family': 'Arial', 'font-size': '128px', 'text-align': 'center'})
         # return fig, similarity_score_html
         # Use the threshold value from the slider to set the color
-        similarity_score_color = 'green' if similarity_score >= threshold else 'red'
-        similarity_score_html = html.H4(similarity_score_text,
-                                        style={'color': similarity_score_color, 'font-family': 'Arial',
-                                               'font-size': '128px', 'text-align': 'center'})
+        similarity_score_color = "green" if similarity_score >= threshold else "red"
+        similarity_score_html = html.H4(
+            similarity_score_text,
+            style={
+                "color": similarity_score_color,
+                "font-family": "Arial",
+                "font-size": "128px",
+                "text-align": "center",
+            },
+        )
 
         return fig, similarity_score_html
 
-    return go.Figure(), html.H4("0%", style={'color': 'red', 'font-family': 'Arial', 'font-size': '128px', 'text-align': 'center'})
+    return go.Figure(), html.H4(
+        "0%",
+        style={
+            "color": "red",
+            "font-family": "Arial",
+            "font-size": "128px",
+            "text-align": "center",
+        },
+    )
 
 
 if __name__ == "__main__":
