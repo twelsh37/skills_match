@@ -12,7 +12,7 @@ import nltk
 from nltk.corpus import stopwords
 from collections import Counter
 import base64
-
+from wordcloud import WordCloud
 
 nltk.download("stopwords")
 nltk.download("punkt")
@@ -20,7 +20,6 @@ nltk.download("punkt")
 app = dash.Dash(
     __name__, external_stylesheets=[dbc.themes.BOOTSTRAP], title="skills_warrior"
 )
-
 server = app.server
 
 app.layout = dbc.Container(
@@ -99,60 +98,99 @@ app.layout = dbc.Container(
                     md=9,
                 ),
                 dbc.Col(
-                    dbc.Card(
-                        [
-                            html.Div(
-                                id="similarity-score",
-                                style={
-                                    "display": "flex",
-                                    "justifyContent": "center",
-                                    "height": "100%",
-                                    "alignItems": "center",
-                                    "color": "black",
-                                    "fontFamily": "Arial",
-                                    "fontSize": "calc(35vh * 0.8)",  # 70% of the card's height
-                                    "height": "35vh",  # Set the height of the card
-                                },
-                            ),
-                            html.Label(
-                                "Adjust threshold",
-                                style={
-                                    "fontSize": "20px",
-                                    "textAlign": "left",
-                                    "marginLeft": "20px",
-                                    "marginBottom": "5px",
-                                },
-                            ),
-                            dcc.Slider(
-                                id="threshold-slider",
-                                min=0,
-                                max=100,
-                                step=1,
-                                value=60,  # Default threshold value
-                                marks={i: "{}%".format(i) for i in range(0, 101, 10)},
-                            ),
-                        ],
-                        style={"height": "100%"},
-                    ),
+                    [
+                        dbc.Card(
+                            [
+                                html.Div(
+                                    id="similarity-score",
+                                    style={
+                                        "display": "flex",
+                                        "justifyContent": "center",
+                                        "alignItems": "center",
+                                        "color": "black",
+                                        "fontFamily": "Arial",
+                                        "fontSize": "calc(35vh * 0.8)",  # 80% of the card's height
+                                        "height": "35vh",  # Set the height of the card
+                                    },
+                                ),
+                                html.Label(
+                                    "Adjust threshold",
+                                    style={
+                                        "fontSize": "20px",
+                                        "textAlign": "left",
+                                        "marginLeft": "20px",
+                                        "marginBottom": "5px",
+                                    },
+                                ),
+                                dcc.Slider(
+                                    id="threshold-slider",
+                                    min=0,
+                                    max=100,
+                                    step=1,
+                                    value=60,  # Default threshold value
+                                    marks={
+                                        i: "{}%".format(i) for i in range(0, 101, 10)
+                                    },
+                                ),
+                            ],
+                            style={
+                                "height": "46.5%"
+                            },  # Adjust the height to make room for the new card
+                        ),
+                        # Insert the new H4 label with padding here
+                        html.H4(
+                            "Word Cloud",
+                            style={"padding-top": "5px", "padding-bottom": "5px"},
+                        ),
+                        dbc.Card(
+                            [
+                                html.Img(id="word-cloud"),
+                            ],
+                            style={"height": "46.5%"},
+                        ),
+                    ],
                     md=3,
                 ),
             ],
-            style={"display": "flex", "align-items": "stretch"},
+            # style={"display": "flex", "align-items": "stretch"},
         ),
         dbc.Row(
             [
                 dbc.Col(
-                    dbc.Button(
-                        "Analyze",
-                        id="analyze-button",
-                        color="primary",
-                        n_clicks=0,
-                        className="mt-2",
-                    ),
+                    children=[
+                        dbc.Button(
+                            "Analyze",
+                            id="analyze-button",
+                            color="primary",
+                            n_clicks=0,
+                            className="me-2",
+                            disabled=True,
+                            style={
+                                "width": "150px",
+                                "minWidth": "100px",
+                            },
+                        ),
+                        dbc.Button(
+                            "Clear",
+                            id="clear-button",
+                            color="primary",
+                            n_clicks=0,
+                            className="me-2",
+                            disabled=True,
+                            style={
+                                "width": "150px",
+                                "minWidth": "100px",
+                            },
+                        ),
+                    ],
                     width=3,
-                    style={"max-width": "200px"},
+                    style={
+                        "padding": "10px",
+                    },
+                    className="d-flex align-items-start",
                 )
-            ]
+            ],
+            className="g-0",
         ),
     ],
 )
@@ -204,6 +242,18 @@ def extract_keywords(text):
     return Counter(words)
 
 
+def generate_wordcloud(text):
+    wordcloud = WordCloud(
+        width=600,
+        height=400,
+        background_color="white",
+        colormap="Blues",
+        stopwords=stopwords.words("english"),
+        min_font_size=10,
+    ).generate(text)
+    return wordcloud.to_image()
+
+
 @app.callback(
     Output("cv-text", "value"),
     Input("upload-cv", "contents"),
@@ -225,9 +275,7 @@ def update_cv_text(contents, filename):
     [State("cv-text", "value"), State("job-description", "value")],
 )
 def update_radar_graph(n_clicks, threshold, cv_text, job_description):
-    """
-    Update radar graph and similarity score when the analyze button is clicked.
-    """
+    """Update radar graph and similarity score when the analyze button is clicked."""
     if n_clicks > 0 and cv_text and job_description:
         if "http" in job_description:
             job_description = extract_text_from_url(job_description)
@@ -256,9 +304,7 @@ def update_radar_graph(n_clicks, threshold, cv_text, job_description):
         )
         similarity_score = len(common_keywords) / len(job_keywords) * 100
         similarity_score_text = f"{similarity_score:.2f}%"
-        # similarity_score_color = 'green' if similarity_score >= 60 else 'red'
-        # similarity_score_html = html.H4(similarity_score_text, style={'color': similarity_score_color, 'font-family': 'Arial', 'font-size': '128px', 'text-align': 'center'})
-        # return fig, similarity_score_html
+
         # Use the threshold value from the slider to set the color
         similarity_score_color = "green" if similarity_score >= threshold else "red"
         similarity_score_html = html.H4(
@@ -271,17 +317,56 @@ def update_radar_graph(n_clicks, threshold, cv_text, job_description):
             },
         )
 
+        wordcloud_img = generate_wordcloud(job_description)
+        img_bytes = BytesIO()
+        wordcloud_img.save(img_bytes, format="PNG")
+        img_bytes = img_bytes.getvalue()  # Now you can call getvalue()
+        wordcloud_img_b64 = base64.b64encode(img_bytes).decode()
+        src = "data:image/png;base64,{}".format(wordcloud_img_b64)
         return fig, similarity_score_html
 
-    return go.Figure(), html.H4(
-        "0%",
-        style={
-            "color": "red",
-            "font-family": "Arial",
-            "font-size": "128px",
-            "text-align": "center",
-        },
+    return (
+        go.Figure(),
+        html.H4(
+            "0%",
+            style={
+                "color": "red",
+                "font-family": "Arial",
+                "font-size": "128px",
+                "text-align": "center",
+            },
+        ),
     )
+
+
+@app.callback(
+    Output("analyze-button", "disabled"),
+    [Input("cv-text", "value"), Input("job-description", "value")],
+)
+def update_button(cv_text, job_description):
+    if cv_text and job_description:
+        return False
+    return True
+
+
+@app.callback(
+    Output("word-cloud", "src"),
+    [Input("analyze-button", "n_clicks")],
+    [State("job-description", "value")],
+)
+def update_word_cloud(n_clicks, job_description):
+    """Update word cloud when the analyze button is clicked."""
+    if n_clicks > 0 and job_description:
+        if "http" in job_description:
+            job_description = extract_text_from_url(job_description)
+        wordcloud_img = generate_wordcloud(job_description)
+        img_bytes = BytesIO()
+        wordcloud_img.save(img_bytes, format="PNG")
+        img_bytes = img_bytes.getvalue()
+        wordcloud_img_b64 = base64.b64encode(img_bytes).decode()
+        src = "data:image/png;base64,{}".format(wordcloud_img_b64)
+        return src
+    return None
 
 
 if __name__ == "__main__":
