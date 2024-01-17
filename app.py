@@ -26,11 +26,13 @@ app.layout = dbc.Container(
     fluid=True,
     style={"padding": "10px"},
     children=[
+        # Skill Warrior Headline H1
         dbc.Row(
             [
                 dbc.Col(html.H1("Skills Warrior"), width=12),
             ]
-        ),
+        ),  # ROW END
+        # Upload CV area. Takes word or PDF documents
         dbc.Row(
             [
                 dbc.Col(
@@ -53,15 +55,18 @@ app.layout = dbc.Container(
                     width=9,
                 ),
             ]
-        ),
+        ),  # ROW END
+        # Row of two columsn. The first column is the CV text area. The second column is the radar graph.
         dbc.Row(
             [
                 dbc.Col(html.H4("Your CV"), md=9),
                 dbc.Col(html.H4("Matching Skills"), md=3),
             ]
-        ),
+        ),  # ROW END
+        # Row of two columns. The first column is the CV text area. The second column is the radar graph.
         dbc.Row(
             [
+                # CV text area
                 dbc.Col(
                     dcc.Textarea(
                         id="cv-text",
@@ -70,6 +75,7 @@ app.layout = dbc.Container(
                     ),
                     md=9,
                 ),
+                # Radar graph
                 dbc.Col(
                     dbc.Card(
                         [
@@ -80,15 +86,18 @@ app.layout = dbc.Container(
                     md=3,
                 ),
             ]
-        ),
+        ),  # ROW END
+        # Row of two columns. The first column is the job description text area. The second column is the similarity score.
         dbc.Row(
             [
                 dbc.Col(html.H4("Job Description"), md=9),
                 dbc.Col(html.H4("Similarity Score"), md=3),
             ]
-        ),
+        ),  # ROW END
+        # Row of two columns. The first column is the job description text area. The second column is the similarity score.
         dbc.Row(
             [
+                # Job description text area
                 dbc.Col(
                     dcc.Textarea(
                         id="job-description",
@@ -97,8 +106,10 @@ app.layout = dbc.Container(
                     ),
                     md=9,
                 ),
+                # Similarity score
                 dbc.Col(
                     [
+                        # Insert the new H4 label with padding here
                         dbc.Card(
                             [
                                 html.Div(
@@ -113,6 +124,7 @@ app.layout = dbc.Container(
                                         "height": "35vh",  # Set the height of the card
                                     },
                                 ),
+                                # Insert the new H4 label with padding here
                                 html.Label(
                                     "Adjust threshold",
                                     style={
@@ -122,6 +134,7 @@ app.layout = dbc.Container(
                                         "marginBottom": "5px",
                                     },
                                 ),
+                                # Insert the new slider here
                                 dcc.Slider(
                                     id="threshold-slider",
                                     min=0,
@@ -142,6 +155,7 @@ app.layout = dbc.Container(
                             "Word Cloud",
                             style={"padding-top": "5px", "padding-bottom": "5px"},
                         ),
+                        # Insert the new wordcloud image here
                         dbc.Card(
                             [
                                 html.Img(id="word-cloud"),
@@ -152,12 +166,14 @@ app.layout = dbc.Container(
                     md=3,
                 ),
             ],
-            # style={"display": "flex", "align-items": "stretch"},
-        ),
+        ),  # ROW END
+        # Row of two columns. The first column is the analyze button. The second column is the clear button.
         dbc.Row(
             [
+                # Analyze and clear buttons
                 dbc.Col(
                     children=[
+                        # Analyze button
                         dbc.Button(
                             "Analyze",
                             id="analyze-button",
@@ -170,6 +186,7 @@ app.layout = dbc.Container(
                                 "minWidth": "100px",
                             },
                         ),
+                        # Clear button
                         dbc.Button(
                             "Clear",
                             id="clear-button",
@@ -191,7 +208,7 @@ app.layout = dbc.Container(
                 )
             ],
             className="g-0",
-        ),
+        ),  # ROW END
     ],
 )
 
