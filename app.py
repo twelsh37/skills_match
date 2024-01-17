@@ -24,7 +24,7 @@ server = app.server
 
 app.layout = dbc.Container(
     fluid=True,
-    style={"padding": "10px"},
+    style={"padding": "30px"},
     children=[
         # Skill Warrior Headline H1
         dbc.Row(
@@ -33,34 +33,40 @@ app.layout = dbc.Container(
             ]
         ),  # ROW END
         # Upload CV area. Takes word or PDF documents
-        dbc.Row(
-            [
-                dbc.Col(
-                    dcc.Upload(
-                        id="upload-cv",
-                        children=html.Div(["Drag and Drop or ", html.A("Select a CV")]),
-                        style={
-                            "width": "100%",
-                            "height": "60px",
-                            "lineHeight": "60px",
-                            "borderWidth": "1px",
-                            "borderStyle": "dashed",
-                            "borderColor": "blue",
-                            "borderRadius": "5px",
-                            "textAlign": "center",
-                            "margin": "10px 10px 10px 0",
-                        },
-                        multiple=False,
+        html.Div(
+            dbc.Row(
+                [
+                    dbc.Col(
+                        dcc.Upload(
+                            id="upload-cv",
+                            children=html.Div(
+                                ["Drag and Drop or ", html.A("Select a CV")]
+                            ),
+                            style={
+                                "width": "100%",
+                                "height": "60px",
+                                "lineHeight": "60px",
+                                "borderWidth": "1px",
+                                "borderStyle": "dashed",
+                                "borderColor": "blue",
+                                "borderRadius": "5px",
+                                "textAlign": "center",
+                                "margin": "10px 10px 10px 0",
+                                "boxShadow": "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+                            },
+                            multiple=False,
+                        ),
+                        width=12,
                     ),
-                    width=9,
-                ),
-            ]
-        ),  # ROW END
+                ]
+            ),  # ROW END
+        ),
         # Row of two columsn. The first column is the CV text area. The second column is the radar graph.
         dbc.Row(
             [
-                dbc.Col(html.H4("Your CV"), md=9),
+                dbc.Col(html.H4("Your CV"), md=6),
                 dbc.Col(html.H4("Matching Skills"), md=3),
+                dbc.Col(html.H4("Word Cloud"), md=3),
             ]
         ),  # ROW END
         # Row of two columns. The first column is the CV text area. The second column is the radar graph.
@@ -71,9 +77,15 @@ app.layout = dbc.Container(
                     dcc.Textarea(
                         id="cv-text",
                         placeholder="CV text will appear here...",
-                        style={"width": "100%", "height": "35vh"},
+                        style={
+                            "width": "100%",
+                            "height": "35vh",
+                            "padding": "10px",
+                            "boxShadow": "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+                            "bordrerRadius": "10px",
+                        },
                     ),
-                    md=9,
+                    md=6,
                 ),
                 # Radar graph
                 dbc.Col(
@@ -81,8 +93,32 @@ app.layout = dbc.Container(
                         [
                             dcc.Graph(id="radar-graph"),
                         ],
-                        style={"height": "35vh"},
+                        style={
+                            "height": "35vh",
+                            "box-shadow": "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+                        },
                     ),
+                    md=3,
+                ),
+                dbc.Col(
+                    [
+                        # Word cloud image
+                        dbc.Card(
+                            [
+                                html.Img(
+                                    id="word-cloud",
+                                    style={
+                                        "width": "100%",
+                                        "height": "100%",
+                                    },
+                                ),
+                            ],
+                            style={
+                                "height": "35vh",
+                                "box-shadow": "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+                            },
+                        ),
+                    ],
                     md=3,
                 ),
             ]
@@ -90,7 +126,7 @@ app.layout = dbc.Container(
         # Row of two columns. The first column is the job description text area. The second column is the similarity score.
         dbc.Row(
             [
-                dbc.Col(html.H4("Job Description"), md=9),
+                dbc.Col(html.H4("Job Description"), md=6),
                 dbc.Col(html.H4("Similarity Score"), md=3),
             ]
         ),  # ROW END
@@ -102,9 +138,14 @@ app.layout = dbc.Container(
                     dcc.Textarea(
                         id="job-description",
                         placeholder="Enter job description URL or text here...",
-                        style={"width": "100%", "height": "100%"},
+                        style={
+                            "width": "100%",
+                            "height": "100%",
+                            "padding": "10px",
+                            "boxShadow": "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+                        },
                     ),
-                    md=9,
+                    md=6,
                 ),
                 # Similarity score
                 dbc.Col(
@@ -120,7 +161,7 @@ app.layout = dbc.Container(
                                         "alignItems": "center",
                                         "color": "black",
                                         "fontFamily": "Arial",
-                                        "fontSize": "calc(35vh * 0.8)",  # 80% of the card's height
+                                        "fontSize": "calc(80vh * 0.8)",  # 80% of the card's height
                                         "height": "35vh",  # Set the height of the card
                                     },
                                 ),
@@ -147,25 +188,15 @@ app.layout = dbc.Container(
                                 ),
                             ],
                             style={
-                                "height": "46.5%"
-                            },  # Adjust the height to make room for the new card
-                        ),
-                        # Insert the new H4 label with padding here
-                        html.H4(
-                            "Word Cloud",
-                            style={"padding-top": "5px", "padding-bottom": "5px"},
-                        ),
-                        # Insert the new wordcloud image here
-                        dbc.Card(
-                            [
-                                html.Img(id="word-cloud"),
-                            ],
-                            style={"height": "46.5%"},
+                                "height": "100%",
+                                "box-shadow": "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+                            },
                         ),
                     ],
-                    md=3,
+                    md=6,
                 ),
             ],
+            style={"height": "46%"},
         ),  # ROW END
         # Row of two columns. The first column is the analyze button. The second column is the clear button.
         dbc.Row(
@@ -261,10 +292,10 @@ def extract_keywords(text):
 
 def generate_wordcloud(text):
     wordcloud = WordCloud(
-        width=600,
-        height=400,
+        width=1000,
+        height=1000,
         background_color="white",
-        colormap="Blues",
+        colormap="Greens",
         stopwords=stopwords.words("english"),
         min_font_size=10,
     ).generate(text)
@@ -337,9 +368,9 @@ def update_radar_graph(n_clicks, threshold, cv_text, job_description):
         wordcloud_img = generate_wordcloud(job_description)
         img_bytes = BytesIO()
         wordcloud_img.save(img_bytes, format="PNG")
-        img_bytes = img_bytes.getvalue()  # Now you can call getvalue()
-        wordcloud_img_b64 = base64.b64encode(img_bytes).decode()
-        src = "data:image/png;base64,{}".format(wordcloud_img_b64)
+        # img_bytes = img_bytes.getvalue()  # Now you can call getvalue()
+        # wordcloud_img_b64 = base64.b64encode(img_bytes).decode()
+        # src = "data:image/png;base64,{}".format(wordcloud_img_b64)
         return fig, similarity_score_html
 
     return (
