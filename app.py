@@ -91,7 +91,10 @@ app.layout = dbc.Container(
                 dbc.Col(
                     dbc.Card(
                         [
-                            dcc.Graph(id="radar-graph"),
+                            dcc.Graph(
+                                id="radar-graph",
+                                style={"height": "100%", "width": "100%"},
+                            ),
                         ],
                         style={
                             "height": "35vh",
