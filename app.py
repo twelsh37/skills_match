@@ -461,26 +461,6 @@ def update_button(cv_text, job_description):
     return True
 
 
-# @app.callback(
-#     Output("word-cloud", "src"),
-#     [Input("analyze-button", "n_clicks")],
-#     [State("job-description", "value")],
-# )
-# def update_word_cloud(n_clicks, job_description):
-#     """Update word cloud when the analyze button is clicked."""
-#     if n_clicks > 0 and job_description:
-#         if "http" in job_description:
-#             job_description = extract_text_from_url(job_description)
-#         wordcloud_img = generate_wordcloud(job_description)
-#         img_bytes = BytesIO()
-#         wordcloud_img.save(img_bytes, format="PNG")
-#         img_bytes = img_bytes.getvalue()
-#         wordcloud_img_b64 = base64.b64encode(img_bytes).decode()
-#         src = "data:image/png;base64,{}".format(wordcloud_img_b64)
-#         return src
-#     return None
-
-
 @app.callback(
     Output("word-cloud", "src"),
     [Input("analyze-button", "n_clicks")],
