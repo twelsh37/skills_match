@@ -353,7 +353,6 @@ def update_radar_graph(n_clicks, threshold, cv_text, job_description):
         fig.update_layout(
             polar=dict(radialaxis=dict(visible=True, range=[0, 5])),
             showlegend=True,
-            # legend=dict(yanchor="top", y=1.2, xanchor="left", x=0.01),
             legend=dict(orientation="h"),
         )
         similarity_score = len(common_keywords) / len(job_keywords) * 100
@@ -374,9 +373,7 @@ def update_radar_graph(n_clicks, threshold, cv_text, job_description):
         wordcloud_img = generate_wordcloud(job_description)
         img_bytes = BytesIO()
         wordcloud_img.save(img_bytes, format="PNG")
-        # img_bytes = img_bytes.getvalue()  # Now you can call getvalue()
-        # wordcloud_img_b64 = base64.b64encode(img_bytes).decode()
-        # src = "data:image/png;base64,{}".format(wordcloud_img_b64)
+
         return fig, similarity_score_html
 
     return (
