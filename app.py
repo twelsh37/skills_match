@@ -351,7 +351,10 @@ def update_radar_graph(n_clicks, threshold, cv_text, job_description):
             )
         )
         fig.update_layout(
-            polar=dict(radialaxis=dict(visible=True, range=[0, 5])), showlegend=True
+            polar=dict(radialaxis=dict(visible=True, range=[0, 5])),
+            showlegend=True,
+            # legend=dict(yanchor="top", y=1.2, xanchor="left", x=0.01),
+            legend=dict(orientation="h"),
         )
         similarity_score = len(common_keywords) / len(job_keywords) * 100
         similarity_score_text = f"{similarity_score:.2f}%"
