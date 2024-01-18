@@ -64,9 +64,9 @@ app.layout = dbc.Container(
         # Row of two columsn. The first column is the CV text area. The second column is the radar graph.
         dbc.Row(
             [
-                dbc.Col(html.H4("Your CV"), md=6),
-                dbc.Col(html.H4("Matching Skills"), md=3),
-                dbc.Col(html.H4("Word Cloud"), md=3),
+                dbc.Col(html.H4("Your CV", style={"margin": "10px"}), md=6),
+                dbc.Col(html.H4("Matching Skills", style={"margin": "10px"}), md=3),
+                dbc.Col(html.H4("Word Cloud", style={"margin": "10px"}), md=3),
             ]
         ),  # ROW END
         # Row of two columns. The first column is the CV text area. The second column is the radar graph.
@@ -129,8 +129,8 @@ app.layout = dbc.Container(
         # Row of two columns. The first column is the job description text area. The second column is the similarity score.
         dbc.Row(
             [
-                dbc.Col(html.H4("Job Description"), md=6),
-                dbc.Col(html.H4("Similarity Score"), md=3),
+                dbc.Col(html.H4("Job Description", style={"margin": "10px"}), md=6),
+                dbc.Col(html.H4("Similarity Score", style={"margin": "10px"}), md=3),
             ]
         ),  # ROW END
         # Row of two columns. The first column is the job description text area. The second column is the similarity score.
@@ -295,8 +295,8 @@ def extract_keywords(text):
 
 def generate_wordcloud(text):
     wordcloud = WordCloud(
-        width=1000,
-        height=1000,
+        width=800,
+        height=400,
         background_color="white",
         colormap="Greens",
         stopwords=stopwords.words("english"),
@@ -421,4 +421,4 @@ def update_word_cloud(n_clicks, job_description):
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run_server(debug=True, port=8051)
