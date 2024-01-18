@@ -16,8 +16,9 @@ from wordcloud import WordCloud
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-# nltk.download("stopwords")
-# nltk.download("punkt")
+nltk.download("stopwords")
+stop_words = set(stopwords.words("english"))
+nltk.download("punkt")
 
 app = dash.Dash(
     __name__, external_stylesheets=[dbc.themes.BOOTSTRAP], title="skills_warrior"
@@ -68,10 +69,10 @@ app.layout = dbc.Container(
             [
                 dbc.Col(html.H4("Your CV", style={"margin": "10px"}), md=6),
                 dbc.Col(
-                    html.H4("Job Description Word Cloud", style={"margin": "10px"}),
+                    html.H4("CV Word Cloud", style={"margin": "10px"}),
                     md=3,
                 ),
-                dbc.Col(html.H4("Matching Skills", style={"margin": "10px"}), md=3),
+                dbc.Col(html.H4("Skills Overlay", style={"margin": "10px"}), md=3),
             ]
         ),  # ROW END
         # Row of two columns. The first column is the CV text area. The second column is the radar graph.
@@ -92,7 +93,7 @@ app.layout = dbc.Container(
                     ),
                     md=6,
                 ),
-                # Word cloud image
+                # CV Word cloud image
                 dbc.Col(
                     [
                         dbc.Card(
@@ -137,6 +138,10 @@ app.layout = dbc.Container(
             [
                 dbc.Col(html.H4("Job Description", style={"margin": "10px"}), md=6),
                 dbc.Col(
+                    html.H4("Job Description Word Cloud", style={"margin": "10px"}),
+                    md=3,
+                ),
+                dbc.Col(
                     html.H4(
                         "Percentage Match Between Resume and Job Description",
                         style={"margin": "10px"},
@@ -153,7 +158,7 @@ app.layout = dbc.Container(
                 dbc.Col(
                     dcc.Textarea(
                         id="job-description",
-                        placeholder="Enter job description URL or text here...",
+                        placeholder="Cut and paste job description, or enter Job URL here...",
                         style={
                             "width": "100%",
                             "height": "100%",
@@ -162,6 +167,27 @@ app.layout = dbc.Container(
                         },
                     ),
                     md=6,
+                ),
+                # Job Description Word cloud image
+                dbc.Col(
+                    [
+                        dbc.Card(
+                            [
+                                html.Img(
+                                    id="word-cloud-jd",
+                                    style={
+                                        "width": "100%",
+                                        "height": "100%",
+                                    },
+                                ),
+                            ],
+                            style={
+                                "height": "100%",
+                                "box-shadow": "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+                            },
+                        ),
+                    ],
+                    md=3,
                 ),
                 # Similarity score
                 dbc.Col(
@@ -183,7 +209,7 @@ app.layout = dbc.Container(
                                 ),
                                 # Insert the new H4 label with padding here
                                 html.Label(
-                                    "Adjust threshold",
+                                    "Adjust Match Threshold",
                                     style={
                                         "fontSize": "20px",
                                         "textAlign": "left",
@@ -209,7 +235,7 @@ app.layout = dbc.Container(
                             },
                         ),
                     ],
-                    md=6,
+                    md=3,
                 ),
             ],
             style={"height": "46%"},
@@ -312,7 +338,20 @@ def generate_wordcloud(text):
         height=400,
         background_color="white",
         colormap="Greens",
-        stopwords=stopwords.words("english"),
+        # stopwords=stopwords.words("english"),
+        stopwords=stop_words,
+        min_font_size=10,
+    ).generate(text)
+    return wordcloud.to_image()
+
+
+def generate_wordcloud_jd(text):
+    wordcloud = WordCloud(
+        width=800,
+        height=400,
+        background_color="white",
+        colormap="Blues",  # Choose a different colormap for the JD WordCloud
+        stopwords=stop_words,
         min_font_size=10,
     ).generate(text)
     return wordcloud.to_image()
@@ -453,6 +492,25 @@ def update_word_cloud(n_clicks, cv_text):
         if "http" in cv_text:
             text = extract_text_from_url(cv_text)
         wordcloud_img = generate_wordcloud(cv_text)
+        img_bytes = BytesIO()
+        wordcloud_img.save(img_bytes, format="PNG")
+        img_bytes = img_bytes.getvalue()
+        wordcloud_img_b64 = base64.b64encode(img_bytes).decode()
+        src = "data:image/png;base64,{}".format(wordcloud_img_b64)
+        return src
+    return None
+
+
+@app.callback(
+    Output("word-cloud-jd", "src"),
+    Input("analyze-button", "n_clicks"),
+    State("job-description", "value"),
+)
+def update_word_cloud_jd(n_clicks, job_description):
+    if n_clicks > 0 and job_description:
+        if "http" in job_description:
+            job_description = extract_text_from_url(job_description)
+        wordcloud_img = generate_wordcloud_jd(job_description)
         img_bytes = BytesIO()
         wordcloud_img.save(img_bytes, format="PNG")
         img_bytes = img_bytes.getvalue()
