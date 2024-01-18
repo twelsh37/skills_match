@@ -13,9 +13,11 @@ from nltk.corpus import stopwords
 from collections import Counter
 import base64
 from wordcloud import WordCloud
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
-nltk.download("stopwords")
-nltk.download("punkt")
+# nltk.download("stopwords")
+# nltk.download("punkt")
 
 app = dash.Dash(
     __name__, external_stylesheets=[dbc.themes.BOOTSTRAP], title="skills_warrior"
@@ -65,8 +67,11 @@ app.layout = dbc.Container(
         dbc.Row(
             [
                 dbc.Col(html.H4("Your CV", style={"margin": "10px"}), md=6),
+                dbc.Col(
+                    html.H4("Job Description Word Cloud", style={"margin": "10px"}),
+                    md=3,
+                ),
                 dbc.Col(html.H4("Matching Skills", style={"margin": "10px"}), md=3),
-                dbc.Col(html.H4("Word Cloud", style={"margin": "10px"}), md=3),
             ]
         ),  # ROW END
         # Row of two columns. The first column is the CV text area. The second column is the radar graph.
@@ -87,25 +92,9 @@ app.layout = dbc.Container(
                     ),
                     md=6,
                 ),
-                # Radar graph
-                dbc.Col(
-                    dbc.Card(
-                        [
-                            dcc.Graph(
-                                id="radar-graph",
-                                style={"height": "100%", "width": "100%"},
-                            ),
-                        ],
-                        style={
-                            "height": "35vh",
-                            "box-shadow": "rgba(0, 0, 0, 0.24) 0px 3px 8px",
-                        },
-                    ),
-                    md=3,
-                ),
+                # Word cloud image
                 dbc.Col(
                     [
-                        # Word cloud image
                         dbc.Card(
                             [
                                 html.Img(
@@ -124,6 +113,22 @@ app.layout = dbc.Container(
                     ],
                     md=3,
                 ),
+                # Radar graph
+                dbc.Col(
+                    dbc.Card(
+                        [
+                            dcc.Graph(
+                                id="radar-graph",
+                                style={"height": "100%", "width": "100%"},
+                            ),
+                        ],
+                        style={
+                            "height": "35vh",
+                            "box-shadow": "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+                        },
+                    ),
+                    md=3,
+                ),
             ]
         ),  # ROW END
         # Row of two columns. The first column is the job description text area. The second column is the similarity
@@ -131,7 +136,13 @@ app.layout = dbc.Container(
         dbc.Row(
             [
                 dbc.Col(html.H4("Job Description", style={"margin": "10px"}), md=6),
-                dbc.Col(html.H4("Similarity Score", style={"margin": "10px"}), md=3),
+                dbc.Col(
+                    html.H4(
+                        "Percentage Match Between Resume and Job Description",
+                        style={"margin": "10px"},
+                    ),
+                    md=3,
+                ),
             ]
         ),  # ROW END
         # Row of two columns. The first column is the job description text area. The second column is the similarity
@@ -357,7 +368,16 @@ def update_radar_graph(n_clicks, threshold, cv_text, job_description):
             showlegend=True,
             legend=dict(orientation="h"),
         )
-        similarity_score = len(common_keywords) / len(job_keywords) * 100
+
+        # Function to calculate the match percentage between the CV text and the job description
+        def calculate_match_percentage(text, jd):
+            vectorizer = CountVectorizer().fit_transform([text, jd])
+            vectors = vectorizer.toarray()
+            cosine_sim = cosine_similarity(vectors)
+            match_percentage = cosine_sim[0, 1] * 100  # Convert to percentage
+            return match_percentage
+
+        similarity_score = calculate_match_percentage(cv_text, job_description)
         similarity_score_text = f"{similarity_score:.2f}%"
 
         # Use the threshold value from the slider to set the color
@@ -402,17 +422,37 @@ def update_button(cv_text, job_description):
     return True
 
 
+# @app.callback(
+#     Output("word-cloud", "src"),
+#     [Input("analyze-button", "n_clicks")],
+#     [State("job-description", "value")],
+# )
+# def update_word_cloud(n_clicks, job_description):
+#     """Update word cloud when the analyze button is clicked."""
+#     if n_clicks > 0 and job_description:
+#         if "http" in job_description:
+#             job_description = extract_text_from_url(job_description)
+#         wordcloud_img = generate_wordcloud(job_description)
+#         img_bytes = BytesIO()
+#         wordcloud_img.save(img_bytes, format="PNG")
+#         img_bytes = img_bytes.getvalue()
+#         wordcloud_img_b64 = base64.b64encode(img_bytes).decode()
+#         src = "data:image/png;base64,{}".format(wordcloud_img_b64)
+#         return src
+#     return None
+
+
 @app.callback(
     Output("word-cloud", "src"),
     [Input("analyze-button", "n_clicks")],
-    [State("job-description", "value")],
+    [State("cv-text", "value")],
 )
-def update_word_cloud(n_clicks, job_description):
+def update_word_cloud(n_clicks, cv_text):
     """Update word cloud when the analyze button is clicked."""
-    if n_clicks > 0 and job_description:
-        if "http" in job_description:
-            job_description = extract_text_from_url(job_description)
-        wordcloud_img = generate_wordcloud(job_description)
+    if n_clicks > 0 and cv_text:
+        if "http" in cv_text:
+            text = extract_text_from_url(cv_text)
+        wordcloud_img = generate_wordcloud(cv_text)
         img_bytes = BytesIO()
         wordcloud_img.save(img_bytes, format="PNG")
         img_bytes = img_bytes.getvalue()
