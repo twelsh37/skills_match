@@ -61,7 +61,7 @@ app.layout = dbc.Container(
                 ]
             ),  # ROW END
         ),
-        # Row of two columsn. The first column is the CV text area. The second column is the radar graph.
+        # Row of two columns. The first column is the CV text area. The second column is the radar graph.
         dbc.Row(
             [
                 dbc.Col(html.H4("Your CV", style={"margin": "10px"}), md=6),
@@ -126,14 +126,16 @@ app.layout = dbc.Container(
                 ),
             ]
         ),  # ROW END
-        # Row of two columns. The first column is the job description text area. The second column is the similarity score.
+        # Row of two columns. The first column is the job description text area. The second column is the similarity
+        # score.
         dbc.Row(
             [
                 dbc.Col(html.H4("Job Description", style={"margin": "10px"}), md=6),
                 dbc.Col(html.H4("Similarity Score", style={"margin": "10px"}), md=3),
             ]
         ),  # ROW END
-        # Row of two columns. The first column is the job description text area. The second column is the similarity score.
+        # Row of two columns. The first column is the job description text area. The second column is the similarity
+        # score.
         dbc.Row(
             [
                 # Job description text area
