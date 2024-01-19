@@ -13,8 +13,11 @@ from nltk.corpus import stopwords
 from collections import Counter
 import base64
 from wordcloud import WordCloud
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 nltk.download("stopwords")
+stop_words = set(stopwords.words("english"))
 nltk.download("punkt")
 
 app = dash.Dash(
@@ -61,12 +64,15 @@ app.layout = dbc.Container(
                 ]
             ),  # ROW END
         ),
-        # Row of two columsn. The first column is the CV text area. The second column is the radar graph.
+        # Row of two columns. The first column is the CV text area. The second column is the radar graph.
         dbc.Row(
             [
-                dbc.Col(html.H4("Your CV"), md=6),
-                dbc.Col(html.H4("Matching Skills"), md=3),
-                dbc.Col(html.H4("Word Cloud"), md=3),
+                dbc.Col(html.H4("Your CV", style={"margin": "10px"}), md=6),
+                dbc.Col(
+                    html.H4("CV Word Cloud", style={"margin": "10px"}),
+                    md=3,
+                ),
+                dbc.Col(html.H4("Skills Overlay", style={"margin": "10px"}), md=3),
             ]
         ),  # ROW END
         # Row of two columns. The first column is the CV text area. The second column is the radar graph.
@@ -87,25 +93,9 @@ app.layout = dbc.Container(
                     ),
                     md=6,
                 ),
-                # Radar graph
-                dbc.Col(
-                    dbc.Card(
-                        [
-                            dcc.Graph(
-                                id="radar-graph",
-                                style={"height": "100%", "width": "100%"},
-                            ),
-                        ],
-                        style={
-                            "height": "35vh",
-                            "box-shadow": "rgba(0, 0, 0, 0.24) 0px 3px 8px",
-                        },
-                    ),
-                    md=3,
-                ),
+                # CV Word cloud image
                 dbc.Col(
                     [
-                        # Word cloud image
                         dbc.Card(
                             [
                                 html.Img(
@@ -124,23 +114,51 @@ app.layout = dbc.Container(
                     ],
                     md=3,
                 ),
+                # Radar graph
+                dbc.Col(
+                    dbc.Card(
+                        [
+                            dcc.Graph(
+                                id="radar-graph",
+                                style={"height": "100%", "width": "100%"},
+                            ),
+                        ],
+                        style={
+                            "height": "35vh",
+                            "box-shadow": "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+                        },
+                    ),
+                    md=3,
+                ),
             ]
         ),  # ROW END
-        # Row of two columns. The first column is the job description text area. The second column is the similarity score.
+        # Row of two columns. The first column is the job description text area. The second column is the similarity
+        # score.
         dbc.Row(
             [
-                dbc.Col(html.H4("Job Description"), md=6),
-                dbc.Col(html.H4("Similarity Score"), md=3),
+                dbc.Col(html.H4("Job Description", style={"margin": "10px"}), md=6),
+                dbc.Col(
+                    html.H4("Job Description Word Cloud", style={"margin": "10px"}),
+                    md=3,
+                ),
+                dbc.Col(
+                    html.H4(
+                        "Percentage Match Between Resume and Job Description",
+                        style={"margin": "10px"},
+                    ),
+                    md=3,
+                ),
             ]
         ),  # ROW END
-        # Row of two columns. The first column is the job description text area. The second column is the similarity score.
+        # Row of two columns. The first column is the job description text area. The second column is the similarity
+        # score.
         dbc.Row(
             [
                 # Job description text area
                 dbc.Col(
                     dcc.Textarea(
                         id="job-description",
-                        placeholder="Enter job description URL or text here...",
+                        placeholder="Cut and paste job description, or enter Job URL here...",
                         style={
                             "width": "100%",
                             "height": "100%",
@@ -149,6 +167,27 @@ app.layout = dbc.Container(
                         },
                     ),
                     md=6,
+                ),
+                # Job Description Word cloud image
+                dbc.Col(
+                    [
+                        dbc.Card(
+                            [
+                                html.Img(
+                                    id="word-cloud-jd",
+                                    style={
+                                        "width": "100%",
+                                        "height": "100%",
+                                    },
+                                ),
+                            ],
+                            style={
+                                "height": "100%",
+                                "box-shadow": "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+                            },
+                        ),
+                    ],
+                    md=3,
                 ),
                 # Similarity score
                 dbc.Col(
@@ -170,7 +209,7 @@ app.layout = dbc.Container(
                                 ),
                                 # Insert the new H4 label with padding here
                                 html.Label(
-                                    "Adjust threshold",
+                                    "Adjust Match Threshold",
                                     style={
                                         "fontSize": "20px",
                                         "textAlign": "left",
@@ -196,7 +235,7 @@ app.layout = dbc.Container(
                             },
                         ),
                     ],
-                    md=6,
+                    md=3,
                 ),
             ],
             style={"height": "46%"},
@@ -295,11 +334,24 @@ def extract_keywords(text):
 
 def generate_wordcloud(text):
     wordcloud = WordCloud(
-        width=1000,
-        height=1000,
+        width=800,
+        height=400,
         background_color="white",
         colormap="Greens",
-        stopwords=stopwords.words("english"),
+        # stopwords=stopwords.words("english"),
+        stopwords=stop_words,
+        min_font_size=10,
+    ).generate(text)
+    return wordcloud.to_image()
+
+
+def generate_wordcloud_jd(text):
+    wordcloud = WordCloud(
+        width=800,
+        height=400,
+        background_color="white",
+        colormap="Blues",  # Choose a different colormap for the JD WordCloud
+        stopwords=stop_words,
         min_font_size=10,
     ).generate(text)
     return wordcloud.to_image()
@@ -353,10 +405,18 @@ def update_radar_graph(n_clicks, threshold, cv_text, job_description):
         fig.update_layout(
             polar=dict(radialaxis=dict(visible=True, range=[0, 5])),
             showlegend=True,
-            # legend=dict(yanchor="top", y=1.2, xanchor="left", x=0.01),
             legend=dict(orientation="h"),
         )
-        similarity_score = len(common_keywords) / len(job_keywords) * 100
+
+        # Function to calculate the match percentage between the CV text and the job description
+        def calculate_match_percentage(text, jd):
+            vectorizer = CountVectorizer().fit_transform([text, jd])
+            vectors = vectorizer.toarray()
+            cosine_sim = cosine_similarity(vectors)
+            match_percentage = cosine_sim[0, 1] * 100  # Convert to percentage
+            return match_percentage
+
+        similarity_score = calculate_match_percentage(cv_text, job_description)
         similarity_score_text = f"{similarity_score:.2f}%"
 
         # Use the threshold value from the slider to set the color
@@ -374,9 +434,7 @@ def update_radar_graph(n_clicks, threshold, cv_text, job_description):
         wordcloud_img = generate_wordcloud(job_description)
         img_bytes = BytesIO()
         wordcloud_img.save(img_bytes, format="PNG")
-        # img_bytes = img_bytes.getvalue()  # Now you can call getvalue()
-        # wordcloud_img_b64 = base64.b64encode(img_bytes).decode()
-        # src = "data:image/png;base64,{}".format(wordcloud_img_b64)
+
         return fig, similarity_score_html
 
     return (
@@ -406,14 +464,33 @@ def update_button(cv_text, job_description):
 @app.callback(
     Output("word-cloud", "src"),
     [Input("analyze-button", "n_clicks")],
-    [State("job-description", "value")],
+    [State("cv-text", "value")],
 )
-def update_word_cloud(n_clicks, job_description):
+def update_word_cloud(n_clicks, cv_text):
     """Update word cloud when the analyze button is clicked."""
+    if n_clicks > 0 and cv_text:
+        if "http" in cv_text:
+            text = extract_text_from_url(cv_text)
+        wordcloud_img = generate_wordcloud(cv_text)
+        img_bytes = BytesIO()
+        wordcloud_img.save(img_bytes, format="PNG")
+        img_bytes = img_bytes.getvalue()
+        wordcloud_img_b64 = base64.b64encode(img_bytes).decode()
+        src = "data:image/png;base64,{}".format(wordcloud_img_b64)
+        return src
+    return None
+
+
+@app.callback(
+    Output("word-cloud-jd", "src"),
+    Input("analyze-button", "n_clicks"),
+    State("job-description", "value"),
+)
+def update_word_cloud_jd(n_clicks, job_description):
     if n_clicks > 0 and job_description:
         if "http" in job_description:
             job_description = extract_text_from_url(job_description)
-        wordcloud_img = generate_wordcloud(job_description)
+        wordcloud_img = generate_wordcloud_jd(job_description)
         img_bytes = BytesIO()
         wordcloud_img.save(img_bytes, format="PNG")
         img_bytes = img_bytes.getvalue()
@@ -424,4 +501,4 @@ def update_word_cloud(n_clicks, job_description):
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run_server(debug=True, port=8051)
