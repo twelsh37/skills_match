@@ -242,7 +242,7 @@ app.layout = dbc.Container(
                                     min=0,
                                     max=100,
                                     step=1,
-                                    value=60,  # Default threshold value
+                                    value=51,  # Default threshold value
                                     marks={
                                         i: "{}%".format(i) for i in range(0, 101, 10)
                                     },
@@ -304,21 +304,37 @@ app.layout = dbc.Container(
         ),  # ROW END
         dbc.Row(
             dbc.Col(
-                html.P(
-                    "Copyright © 2024 The AIAA Consultants Ltd",
-                    style={
-                        "textAlign": "center",
-                        "color": "#B98600",
-                        "padding": "20px",
-                        "fontSize": "20px",
-                        "backgroundColor": "#364A9F",
-                        "borderColor": "#111111",
-                        "left": "0",
-                        "bottom": "0",
-                        # "height": "20px",
-                        "width": "100%",
-                    },
-                ),
+                [
+                    html.Div(
+                        [
+                            html.Img(
+                                src="/assets/aiaa-circle.png",
+                                style={
+                                    "position": "absolute",
+                                    "top": "10px",
+                                    "left": "20px",
+                                    "width": "50px",
+                                    "height": "50px",
+                                    "zIndex": "1",
+                                },
+                            ),
+                            html.P(
+                                "Copyright © 2024 The AIAA Consultants Ltd",
+                                style={
+                                    "textAlign": "center",
+                                    "color": "#B98600",
+                                    "padding": "20px",
+                                    "fontSize": "20px",
+                                    "backgroundColor": "#364A9F",
+                                    "borderColor": "#111111",
+                                    "width": "100%",
+                                    "position": "relative",
+                                },
+                            ),
+                        ],
+                        style={"position": "relative"},
+                    ),
+                ]
             )
         ),
     ],
@@ -354,7 +370,13 @@ def extract_text_from_url(url):
     try:
         res = requests.get(url)
         soup = BeautifulSoup(res.text, "html.parser")
-        text = " ".join([p.text for p in soup.find_all("p")])
+        text_div = soup.find("div", id="md_skills")  # locate the div by id
+        if text_div:
+            text = " ".join(
+                p.text for p in text_div.find_all("p")
+            )  # get the text inside <p> tags within the div
+        else:
+            text = ""
     except Exception as e:
         print(e)
         return ""
@@ -490,27 +512,34 @@ def update_radar_graph(n_clicks, threshold, cv_text, job_description):
     )
 
 
+# @app.callback(
+#     Output("analyze-button", "disabled"),
+#     [Input("cv-text", "value"), Input("job-description", "value")],
+# )
+# def update_button(cv_text, job_description):
+#     """
+#     This function updates the state of the analyze-button based on the values of cv_text and job_description.
+#
+#     Parameters:
+#     cv_text (str): The text of the CV.
+#     job_description (str): The text of the job description.
+#
+#     Returns:
+#     bool: The state of the analyze-button. If both cv_text and job_description are not empty, it returns False, otherwise True.
+#     """
+#
+#
+# def update_button(cv_text, job_description):
+#     if cv_text and job_description:
+#         return False
+#     return True
 @app.callback(
-    Output("analyze-button", "disabled"),
+    [Output("analyze-button", "disabled"), Output("clear-button", "disabled")],
     [Input("cv-text", "value"), Input("job-description", "value")],
 )
-def update_button(cv_text, job_description):
-    """
-    This function updates the state of the analyze-button based on the values of cv_text and job_description.
-
-    Parameters:
-    cv_text (str): The text of the CV.
-    job_description (str): The text of the job description.
-
-    Returns:
-    bool: The state of the analyze-button. If both cv_text and job_description are not empty, it returns False, otherwise True.
-    """
-
-
-def update_button(cv_text, job_description):
-    if cv_text and job_description:
-        return False
-    return True
+def update_buttons(cv_text, job_description):
+    empty_fields = not bool(cv_text and job_description)
+    return empty_fields, empty_fields
 
 
 @app.callback(
