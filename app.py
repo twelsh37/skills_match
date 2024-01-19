@@ -583,4 +583,3 @@ def update_word_cloud_jd(n_clicks, job_description):
 
 if __name__ == "__main__":
     app.run_server(debug=True, port=8051)
-
