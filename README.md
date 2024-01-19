@@ -8,10 +8,7 @@ Future tasks might include:<p>
 4. Provide a list of skills that are in both the CV and the Job Description.<p>
 5. Create a database of CVs and Job Descriptions that can be used to train a machine learning model to match CVs to Job Descriptions.<p>
 
-Currently we are starting from here and will build up the functionality as we go.<p>
 
-![img.png](img.png)
+Added in some scikit-learn vectorisation so now the Percentage figure is an accurate reflection between the CV and JD.
 
-Making progress with the interface. still a long way to go but it is starting to look like something.<p>
-
-![image-1.png](image-1.png)
+![img.png](image-3.png)
