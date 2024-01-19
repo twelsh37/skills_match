@@ -1,7 +1,26 @@
+###############################################################################
+#   This program compares two inputs and returns a similarity score.           #
+#    Copyright (C) 2024  Tom Welsh twelsh37@gmail.com                         #
+#                                                                             #
+#    This program is free software: you can redistribute it and/or modify     #
+#    it under the terms of the GNU General Public License as published by     #
+#    the Free Software Foundation, either version 3 of the License, or        #
+#    (at your option) any later version.                                      #
+#                                                                             #
+#    This program is distributed in the hope that it will be useful,          #
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of           #
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            #
+#    GNU General Public License for more details.                             #
+#                                                                             #
+#    You should have received a copy of the GNU General Public License        #
+#    along with this program.  If not, see <https://www.gnu.org/licenses/>.   #
+###############################################################################
+
 import dash
 import dash_bootstrap_components as dbc
 from dash import dcc, html
 from dash.dependencies import Input, Output, State
+from dash.exceptions import PreventUpdate
 import plotly.graph_objects as go
 import docx2txt
 import PyPDF2
@@ -143,7 +162,7 @@ app.layout = dbc.Container(
                 ),
                 dbc.Col(
                     html.H4(
-                        "Percentage Match Between Resume and Job Description",
+                        "Percentage Match",
                         style={"margin": "10px"},
                     ),
                     md=3,
@@ -189,7 +208,7 @@ app.layout = dbc.Container(
                     ],
                     md=3,
                 ),
-                # Similarity score
+                # Percentage match
                 dbc.Col(
                     [
                         # Insert the new H4 label with padding here
@@ -280,8 +299,28 @@ app.layout = dbc.Container(
                     className="d-flex align-items-start",
                 )
             ],
+            # style={"marginBottom": "80px"},
             className="g-0",
         ),  # ROW END
+        dbc.Row(
+            dbc.Col(
+                html.P(
+                    "Copyright © 2024 The AIAA Consultants Ltd",
+                    style={
+                        "textAlign": "center",
+                        "color": "#B98600",
+                        "padding": "20px",
+                        "fontSize": "20px",
+                        "backgroundColor": "#364A9F",
+                        "borderColor": "#111111",
+                        "left": "0",
+                        "bottom": "0",
+                        # "height": "20px",
+                        "width": "100%",
+                    },
+                ),
+            )
+        ),
     ],
 )
 
@@ -456,6 +495,19 @@ def update_radar_graph(n_clicks, threshold, cv_text, job_description):
     [Input("cv-text", "value"), Input("job-description", "value")],
 )
 def update_button(cv_text, job_description):
+    """
+    This function updates the state of the analyze-button based on the values of cv_text and job_description.
+
+    Parameters:
+    cv_text (str): The text of the CV.
+    job_description (str): The text of the job description.
+
+    Returns:
+    bool: The state of the analyze-button. If both cv_text and job_description are not empty, it returns False, otherwise True.
+    """
+
+
+def update_button(cv_text, job_description):
     if cv_text and job_description:
         return False
     return True
@@ -467,17 +519,30 @@ def update_button(cv_text, job_description):
     [State("cv-text", "value")],
 )
 def update_word_cloud(n_clicks, cv_text):
-    """Update word cloud when the analyze button is clicked."""
-    if n_clicks > 0 and cv_text:
-        if "http" in cv_text:
-            text = extract_text_from_url(cv_text)
-        wordcloud_img = generate_wordcloud(cv_text)
-        img_bytes = BytesIO()
-        wordcloud_img.save(img_bytes, format="PNG")
-        img_bytes = img_bytes.getvalue()
-        wordcloud_img_b64 = base64.b64encode(img_bytes).decode()
-        src = "data:image/png;base64,{}".format(wordcloud_img_b64)
-        return src
+    """
+    Update word cloud when the analyze button is clicked.
+
+    :param n_clicks: Number of times the button has been clicked
+    :param cv_text: Text from which to generate the word cloud
+    :return: Base64 encoded image source if successful, None otherwise
+    """
+    if n_clicks is None:
+        raise PreventUpdate
+
+    try:
+        if cv_text is not None and "http" in cv_text:
+            cv_text = extract_text_from_url(cv_text)
+
+        if cv_text:
+            wordcloud_img = generate_wordcloud(cv_text)
+            img_bytes = BytesIO()
+            wordcloud_img.save(img_bytes, format="PNG")
+            img_bytes = img_bytes.getvalue()
+            wordcloud_img_b64 = base64.b64encode(img_bytes).decode()
+            src = "data:image/png;base64,{}".format(wordcloud_img_b64)
+            return src
+    except Exception as e:
+        print(f"An error occurred: {e}")
     return None
 
 
@@ -487,17 +552,33 @@ def update_word_cloud(n_clicks, cv_text):
     State("job-description", "value"),
 )
 def update_word_cloud_jd(n_clicks, job_description):
-    if n_clicks > 0 and job_description:
-        if "http" in job_description:
-            job_description = extract_text_from_url(job_description)
-        wordcloud_img = generate_wordcloud_jd(job_description)
-        img_bytes = BytesIO()
-        wordcloud_img.save(img_bytes, format="PNG")
-        img_bytes = img_bytes.getvalue()
-        wordcloud_img_b64 = base64.b64encode(img_bytes).decode()
-        src = "data:image/png;base64,{}".format(wordcloud_img_b64)
-        return src
-    return None
+    """
+    Updates the word cloud based on the job description.
+
+    Parameters:
+    n_clicks (int): The number of times the analyze button has been clicked.
+    job_description (str): The job description from which to generate a word cloud.
+
+    Returns:
+    str: The source of the word cloud image.
+    """
+    if n_clicks is None:
+        raise PreventUpdate
+
+    try:
+        if n_clicks > 0 and job_description:
+            if "http" in job_description:
+                job_description = extract_text_from_url(job_description)
+            wordcloud_img = generate_wordcloud_jd(job_description)
+            img_bytes = BytesIO()
+            wordcloud_img.save(img_bytes, format="PNG")
+            img_bytes = img_bytes.getvalue()
+            wordcloud_img_b64 = base64.b64encode(img_bytes).decode()
+            src = "data:image/png;base64,{}".format(wordcloud_img_b64)
+            return src
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None
 
 
 if __name__ == "__main__":
