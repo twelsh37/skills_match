@@ -51,7 +51,10 @@ app.layout = dbc.Container(
         # Skill Warrior Headline H1
         dbc.Row(
             [
-                dbc.Col(html.H1("Skills Warrior"), width=12),
+                dbc.Col(
+                    html.H1("Skills Warrior"),
+                    width=12,
+                ),
             ]
         ),  # ROW END
         # Upload CV area. Takes word or PDF documents
@@ -86,12 +89,33 @@ app.layout = dbc.Container(
         # Row of two columns. The first column is the CV text area. The second column is the radar graph.
         dbc.Row(
             [
-                dbc.Col(html.H4("Your CV", style={"margin": "10px"}), md=6),
                 dbc.Col(
-                    html.H4("CV Word Cloud", style={"margin": "10px"}),
+                    html.H4(
+                        "Your CV",
+                        style={
+                            "margin": "10px",
+                        },
+                    ),
+                    md=6,
+                ),
+                dbc.Col(
+                    html.H4(
+                        "CV Word Cloud",
+                        style={
+                            "margin": "10px",
+                        },
+                    ),
                     md=3,
                 ),
-                dbc.Col(html.H4("Skills Overlay", style={"margin": "10px"}), md=3),
+                dbc.Col(
+                    html.H4(
+                        "Skills Overlay",
+                        style={
+                            "margin": "10px",
+                        },
+                    ),
+                    md=3,
+                ),
             ]
         ),  # ROW END
         # Row of two columns. The first column is the CV text area. The second column is the radar graph.
@@ -294,7 +318,7 @@ app.layout = dbc.Container(
                     ],
                     width=3,
                     style={
-                        "padding": "10px",
+                        "padding": "20px",
                     },
                     className="d-flex align-items-start",
                 )
@@ -512,27 +536,6 @@ def update_radar_graph(n_clicks, threshold, cv_text, job_description):
     )
 
 
-# @app.callback(
-#     Output("analyze-button", "disabled"),
-#     [Input("cv-text", "value"), Input("job-description", "value")],
-# )
-# def update_button(cv_text, job_description):
-#     """
-#     This function updates the state of the analyze-button based on the values of cv_text and job_description.
-#
-#     Parameters:
-#     cv_text (str): The text of the CV.
-#     job_description (str): The text of the job description.
-#
-#     Returns:
-#     bool: The state of the analyze-button. If both cv_text and job_description are not empty, it returns False, otherwise True.
-#     """
-#
-#
-# def update_button(cv_text, job_description):
-#     if cv_text and job_description:
-#         return False
-#     return True
 @app.callback(
     [Output("analyze-button", "disabled"), Output("clear-button", "disabled")],
     [Input("cv-text", "value"), Input("job-description", "value")],
