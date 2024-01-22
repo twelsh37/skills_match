@@ -67,17 +67,22 @@ app.layout = dbc.Container(
                             children=html.Div(
                                 ["Drag and Drop or ", html.A("Select a CV")]
                             ),
+                            className="mt-2 mr-2 mb-2 text-center upload-hover rounded-3",
                             style={
                                 "width": "100%",
                                 "height": "60px",
                                 "lineHeight": "60px",
                                 "borderWidth": "1px",
-                                "borderStyle": "dashed",
-                                "borderColor": "blue",
+                                "borderStyle": "solid",
+                                "borderColor": "black",
                                 "borderRadius": "5px",
-                                "textAlign": "center",
-                                "margin": "10px 10px 10px 0",
                                 "boxShadow": "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+                                "backgroundColor": "white",
+                            },
+                            # causes bar to change colour when a file is dragged over it
+                            style_active={
+                                "backgroundColor": "rgba(39, 213, 245, 0.12)",
+                                "borderColor": "green",
                             },
                             multiple=False,
                         ),
@@ -90,30 +95,15 @@ app.layout = dbc.Container(
         dbc.Row(
             [
                 dbc.Col(
-                    html.H4(
-                        "Your CV",
-                        style={
-                            "margin": "10px",
-                        },
-                    ),
+                    html.H4("Your CV", className="m-2"),
                     md=6,
                 ),
                 dbc.Col(
-                    html.H4(
-                        "CV Word Cloud",
-                        style={
-                            "margin": "10px",
-                        },
-                    ),
+                    html.H4("CV Word Cloud", className="m-2"),
                     md=3,
                 ),
                 dbc.Col(
-                    html.H4(
-                        "Skills Overlay",
-                        style={
-                            "margin": "10px",
-                        },
-                    ),
+                    html.H4("Skills Overlay", className="m-2"),
                     md=3,
                 ),
             ]
@@ -126,13 +116,7 @@ app.layout = dbc.Container(
                     dcc.Textarea(
                         id="cv-text",
                         placeholder="CV text will appear here...",
-                        style={
-                            "width": "100%",
-                            "height": "35vh",
-                            "padding": "10px",
-                            "boxShadow": "rgba(0, 0, 0, 0.24) 0px 3px 8px",
-                            "bordrerRadius": "10px",
-                        },
+                        className="bs-100pct p-3 rounded-3 w-100 h-100",
                     ),
                     md=6,
                 ),
@@ -141,18 +125,15 @@ app.layout = dbc.Container(
                     [
                         dbc.Card(
                             [
+                                html.Div(
+                                    "Awaiting analysis run", id="word-cloud-placeholder"
+                                ),
                                 html.Img(
                                     id="word-cloud",
-                                    style={
-                                        "width": "100%",
-                                        "height": "100%",
-                                    },
+                                    className="w-100 h-100 p-2",
                                 ),
                             ],
-                            style={
-                                "height": "35vh",
-                                "box-shadow": "rgba(0, 0, 0, 0.24) 0px 3px 8px",
-                            },
+                            className="bs-100pct rounded-3 custom-border",
                         ),
                     ],
                     md=3,
@@ -163,31 +144,42 @@ app.layout = dbc.Container(
                         [
                             dcc.Graph(
                                 id="radar-graph",
-                                style={"height": "100%", "width": "100%"},
+                                className="w-100 h-100",
+                                style={"display": "none", "height": "500px"},
+                            ),
+                            html.Div(
+                                id="no-data-message",
+                                children=["Awaiting analysis run"],
+                                style={
+                                    "display": "flex",
+                                    "justifyContent": "center",
+                                    "alignItems": "center",
+                                    "fontSize": "20pt",
+                                    "height": "100%",
+                                },
                             ),
                         ],
-                        style={
-                            "height": "35vh",
-                            "box-shadow": "rgba(0, 0, 0, 0.24) 0px 3px 8px",
-                        },
-                    ),
+                        className="bs-100pct rounded-3 custom-border",
+                    ),  # dbc.card closing parenthesis here
                     md=3,
                 ),
-            ]
+            ],
+            className="h-100",
+            # style={"height": "100%"},
         ),  # ROW END
         # Row of two columns. The first column is the job description text area. The second column is the similarity
         # score.
         dbc.Row(
             [
-                dbc.Col(html.H4("Job Description", style={"margin": "10px"}), md=6),
+                dbc.Col(html.H4("Job Description", className="m-2 mt-3"), md=6),
                 dbc.Col(
-                    html.H4("Job Description Word Cloud", style={"margin": "10px"}),
+                    html.H4("Job Description Word Cloud", className="m-2 mt-3"),
                     md=3,
                 ),
                 dbc.Col(
                     html.H4(
                         "Percentage Match",
-                        style={"margin": "10px"},
+                        className="m-2 mt-3",
                     ),
                     md=3,
                 ),
@@ -202,12 +194,7 @@ app.layout = dbc.Container(
                     dcc.Textarea(
                         id="job-description",
                         placeholder="Cut and paste job description, or enter Job URL here...",
-                        style={
-                            "width": "100%",
-                            "height": "100%",
-                            "padding": "10px",
-                            "boxShadow": "rgba(0, 0, 0, 0.24) 0px 3px 8px",
-                        },
+                        className="bs-100pct p-3 rounded-3 w-100 h-100",
                     ),
                     md=6,
                 ),
@@ -216,18 +203,16 @@ app.layout = dbc.Container(
                     [
                         dbc.Card(
                             [
+                                html.Div(
+                                    "Awaiting analysis run",
+                                    id="word-cloud-jd-placeholder",
+                                ),
                                 html.Img(
                                     id="word-cloud-jd",
-                                    style={
-                                        "width": "100%",
-                                        "height": "100%",
-                                    },
+                                    className="w-100 h-100 p-2",
                                 ),
                             ],
-                            style={
-                                "height": "100%",
-                                "box-shadow": "rgba(0, 0, 0, 0.24) 0px 3px 8px",
-                            },
+                            className="bs-100pct rounded-3 custom-border",
                         ),
                     ],
                     md=3,
@@ -246,8 +231,8 @@ app.layout = dbc.Container(
                                         "alignItems": "center",
                                         "color": "black",
                                         "fontFamily": "Arial",
-                                        "fontSize": "calc(80vh * 0.8)",  # 80% of the card's height
-                                        "height": "35vh",  # Set the height of the card
+                                        "fontSize": "calc(23vh + 3vw)",  # 80% of the card's height
+                                        "height": "33vh",  # Set the height of the card
                                     },
                                 ),
                                 # Insert the new H4 label with padding here
@@ -258,6 +243,7 @@ app.layout = dbc.Container(
                                         "textAlign": "left",
                                         "marginLeft": "20px",
                                         "marginBottom": "5px",
+                                        "padding": "5px",
                                     },
                                 ),
                                 # Insert the new slider here
@@ -272,16 +258,14 @@ app.layout = dbc.Container(
                                     },
                                 ),
                             ],
-                            style={
-                                "height": "100%",
-                                "box-shadow": "rgba(0, 0, 0, 0.24) 0px 3px 8px",
-                            },
+                            className="bs-100pct rounded-3 custom-border",
                         ),
                     ],
                     md=3,
                 ),
             ],
-            style={"height": "46%"},
+            className="h-100",
+            # style={"height": "50%"},
         ),  # ROW END
         # Row of two columns. The first column is the analyze button. The second column is the clear button.
         dbc.Row(
@@ -458,7 +442,12 @@ def update_cv_text(contents, filename):
 
 
 @app.callback(
-    [Output("radar-graph", "figure"), Output("similarity-score", "children")],
+    [
+        Output("radar-graph", "figure"),
+        Output("similarity-score", "children"),
+        Output("radar-graph", "style"),
+        Output("no-data-message", "style"),
+    ],
     [Input("analyze-button", "n_clicks"), Input("threshold-slider", "value")],
     [State("cv-text", "value"), State("job-description", "value")],
 )
@@ -502,7 +491,7 @@ def update_radar_graph(n_clicks, threshold, cv_text, job_description):
             return match_percentage
 
         similarity_score = calculate_match_percentage(cv_text, job_description)
-        similarity_score_text = f"{similarity_score:.2f}%"
+        similarity_score_text = f"{similarity_score:.0f}%"
 
         # Use the threshold value from the slider to set the color
         similarity_score_color = "green" if similarity_score >= threshold else "red"
@@ -520,19 +509,28 @@ def update_radar_graph(n_clicks, threshold, cv_text, job_description):
         img_bytes = BytesIO()
         wordcloud_img.save(img_bytes, format="PNG")
 
-        return fig, similarity_score_html
+        # If data available, hide no-data-message and show the graph
+        return fig, similarity_score_html, {"display": "block"}, {"display": "none"}
 
     return (
         go.Figure(),
         html.H4(
-            "0%",
+            "Awaiting Analysis run",
             style={
-                "color": "red",
+                "color": "black",
                 "font-family": "Arial",
-                "font-size": "128px",
+                "font-size": "20px",
                 "text-align": "center",
             },
         ),
+        {"display": "none"},
+        {
+            "display": "flex",
+            "justifyContent": "center",
+            "alignItems": "center",
+            "fontSize": "20px",
+            "height": "100%",
+        },
     )
 
 
@@ -546,7 +544,11 @@ def update_buttons(cv_text, job_description):
 
 
 @app.callback(
-    Output("word-cloud", "src"),
+    [
+        Output("word-cloud", "src"),
+        Output("word-cloud", "style"),
+        Output("word-cloud-placeholder", "children"),
+    ],
     [Input("analyze-button", "n_clicks")],
     [State("cv-text", "value")],
 )
@@ -559,7 +561,20 @@ def update_word_cloud(n_clicks, cv_text):
     :return: Base64 encoded image source if successful, None otherwise
     """
     if n_clicks is None:
-        raise PreventUpdate
+        return (
+            None,
+            {"display": "none"},
+            html.Div(
+                "Awaiting analysis run",
+                style={
+                    "display": "flex",
+                    "justifyContent": "center",
+                    "alignItems": "center",
+                    "fontSize": "20px",
+                    "height": "550px",
+                },
+            ),
+        )
 
     try:
         if cv_text is not None and "http" in cv_text:
@@ -572,14 +587,31 @@ def update_word_cloud(n_clicks, cv_text):
             img_bytes = img_bytes.getvalue()
             wordcloud_img_b64 = base64.b64encode(img_bytes).decode()
             src = "data:image/png;base64,{}".format(wordcloud_img_b64)
-            return src
+            return src, {"display": "block"}, ""
     except Exception as e:
         print(f"An error occurred: {e}")
-    return None
+    return (
+        None,
+        {"display": "none"},
+        html.Div(
+            "Awaiting analysis run",
+            style={
+                "display": "flex",
+                "justifyContent": "center",
+                "alignItems": "center",
+                "fontSize": "20px",
+                "height": "550px",
+            },
+        ),
+    )
 
 
 @app.callback(
-    Output("word-cloud-jd", "src"),
+    [
+        Output("word-cloud-jd", "src"),
+        Output("word-cloud-jd", "style"),
+        Output("word-cloud-jd-placeholder", "children"),
+    ],
     Input("analyze-button", "n_clicks"),
     State("job-description", "value"),
 )
@@ -595,7 +627,20 @@ def update_word_cloud_jd(n_clicks, job_description):
     str: The source of the word cloud image.
     """
     if n_clicks is None:
-        raise PreventUpdate
+        return (
+            None,
+            {"display": "none"},
+            html.Div(
+                "Awaiting analysis run",
+                style={
+                    "display": "flex",
+                    "justifyContent": "center",
+                    "alignItems": "center",
+                    "fontSize": "20px",
+                    "height": "550px",
+                },
+            ),
+        )
 
     try:
         if n_clicks > 0 and job_description:
@@ -607,10 +652,24 @@ def update_word_cloud_jd(n_clicks, job_description):
             img_bytes = img_bytes.getvalue()
             wordcloud_img_b64 = base64.b64encode(img_bytes).decode()
             src = "data:image/png;base64,{}".format(wordcloud_img_b64)
-            return src
+            return src, {"display": "block"}, ""
     except Exception as e:
         print(f"An error occurred: {e}")
-        return None
+    return (
+        None,
+        {"display": "none"},
+        html.Div(
+            "Awaiting analysis run",
+            # className="cv-jd",
+            style={
+                "display": "flex",
+                "justifyContent": "center",
+                "alignItems": "center",
+                "fontSize": "20px",
+                "height": "550px",
+            },
+        ),
+    )
 
 
 if __name__ == "__main__":
