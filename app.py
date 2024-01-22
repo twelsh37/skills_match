@@ -67,6 +67,7 @@ app.layout = dbc.Container(
                             children=html.Div(
                                 ["Drag and Drop or ", html.A("Select a CV")]
                             ),
+                            className="mt-2 mr-2 mb-2 text-center",
                             style={
                                 "width": "100%",
                                 "height": "60px",
@@ -75,8 +76,8 @@ app.layout = dbc.Container(
                                 "borderStyle": "dashed",
                                 "borderColor": "blue",
                                 "borderRadius": "5px",
-                                "textAlign": "center",
-                                "margin": "10px 10px 10px 0",
+                                # "textAlign": "center",
+                                # "margin": "10px 10px 10px 0",
                                 "boxShadow": "rgba(0, 0, 0, 0.24) 0px 3px 8px",
                             },
                             multiple=False,
@@ -90,30 +91,15 @@ app.layout = dbc.Container(
         dbc.Row(
             [
                 dbc.Col(
-                    html.H4(
-                        "Your CV",
-                        style={
-                            "margin": "10px",
-                        },
-                    ),
+                    html.H4("Your CV", className="m-2"),
                     md=6,
                 ),
                 dbc.Col(
-                    html.H4(
-                        "CV Word Cloud",
-                        style={
-                            "margin": "10px",
-                        },
-                    ),
+                    html.H4("CV Word Cloud", className="m-2"),
                     md=3,
                 ),
                 dbc.Col(
-                    html.H4(
-                        "Skills Overlay",
-                        style={
-                            "margin": "10px",
-                        },
-                    ),
+                    html.H4("Skills Overlay", className="m-2"),
                     md=3,
                 ),
             ]
@@ -126,12 +112,10 @@ app.layout = dbc.Container(
                     dcc.Textarea(
                         id="cv-text",
                         placeholder="CV text will appear here...",
+                        className="w-100 p-3 rounded-2",
                         style={
-                            "width": "100%",
                             "height": "35vh",
-                            "padding": "10px",
                             "boxShadow": "rgba(0, 0, 0, 0.24) 0px 3px 8px",
-                            "bordrerRadius": "10px",
                         },
                     ),
                     md=6,
@@ -141,18 +125,9 @@ app.layout = dbc.Container(
                     [
                         dbc.Card(
                             [
-                                html.Img(
-                                    id="word-cloud",
-                                    style={
-                                        "width": "100%",
-                                        "height": "100%",
-                                    },
-                                ),
+                                html.Img(id="word-cloud", className="h-95 w-95"),
                             ],
-                            style={
-                                "height": "35vh",
-                                "box-shadow": "rgba(0, 0, 0, 0.24) 0px 3px 8px",
-                            },
+                            className="bs-100pct rounded-2",
                         ),
                     ],
                     md=3,
@@ -163,13 +138,10 @@ app.layout = dbc.Container(
                         [
                             dcc.Graph(
                                 id="radar-graph",
-                                style={"height": "100%", "width": "100%"},
+                                className="w-100 h-100",
                             ),
                         ],
-                        style={
-                            "height": "35vh",
-                            "box-shadow": "rgba(0, 0, 0, 0.24) 0px 3px 8px",
-                        },
+                        className="bs-100pct rounded-2",
                     ),
                     md=3,
                 ),
@@ -179,15 +151,15 @@ app.layout = dbc.Container(
         # score.
         dbc.Row(
             [
-                dbc.Col(html.H4("Job Description", style={"margin": "10px"}), md=6),
+                dbc.Col(html.H4("Job Description", className="m-2"), md=6),
                 dbc.Col(
-                    html.H4("Job Description Word Cloud", style={"margin": "10px"}),
+                    html.H4("Job Description Word Cloud", className="m-2"),
                     md=3,
                 ),
                 dbc.Col(
                     html.H4(
                         "Percentage Match",
-                        style={"margin": "10px"},
+                        className="m-2",
                     ),
                     md=3,
                 ),
@@ -224,10 +196,7 @@ app.layout = dbc.Container(
                                     },
                                 ),
                             ],
-                            style={
-                                "height": "100%",
-                                "box-shadow": "rgba(0, 0, 0, 0.24) 0px 3px 8px",
-                            },
+                            className="bs-100pct",
                         ),
                     ],
                     md=3,
@@ -272,10 +241,7 @@ app.layout = dbc.Container(
                                     },
                                 ),
                             ],
-                            style={
-                                "height": "100%",
-                                "box-shadow": "rgba(0, 0, 0, 0.24) 0px 3px 8px",
-                            },
+                            className="bs-100pct",
                         ),
                     ],
                     md=3,
