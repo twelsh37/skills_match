@@ -12,6 +12,7 @@ body {
 /* 35vh, box shadow */
 .bs-100pct{
     height: 100%;
+    width: 100%;
     overflow: hidden;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
@@ -19,6 +20,7 @@ body {
 /* 35vh, box shadow */
 .bs-35vh{
     height: 35vh;
+    overflow: hidden;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 
