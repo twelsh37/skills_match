@@ -67,18 +67,22 @@ app.layout = dbc.Container(
                             children=html.Div(
                                 ["Drag and Drop or ", html.A("Select a CV")]
                             ),
-                            className="mt-2 mr-2 mb-2 text-center",
+                            className="mt-2 mr-2 mb-2 text-center upload-hover rounded-3",
                             style={
                                 "width": "100%",
                                 "height": "60px",
                                 "lineHeight": "60px",
                                 "borderWidth": "1px",
-                                "borderStyle": "dashed",
-                                "borderColor": "blue",
+                                "borderStyle": "solid",
+                                "borderColor": "black",
                                 "borderRadius": "5px",
-                                # "textAlign": "center",
-                                # "margin": "10px 10px 10px 0",
                                 "boxShadow": "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+                                "backgroundColor": "white",
+                            },
+                            # causes bar to change colour when a file is dragged over it
+                            style_active={
+                                "backgroundColor": "rgba(39, 213, 245, 0.12)",
+                                "borderColor": "green",
                             },
                             multiple=False,
                         ),
@@ -112,11 +116,7 @@ app.layout = dbc.Container(
                     dcc.Textarea(
                         id="cv-text",
                         placeholder="CV text will appear here...",
-                        className="w-100 p-3 rounded-2",
-                        style={
-                            "height": "35vh",
-                            "boxShadow": "rgba(0, 0, 0, 0.24) 0px 3px 8px",
-                        },
+                        className="bs-100pct p-3 rounded-3 w-100",
                     ),
                     md=6,
                 ),
@@ -125,9 +125,12 @@ app.layout = dbc.Container(
                     [
                         dbc.Card(
                             [
-                                html.Img(id="word-cloud", className="h-95 w-95"),
+                                html.Img(
+                                    id="word-cloud",
+                                    className="w-95 h-95",
+                                )
                             ],
-                            className="bs-100pct rounded-2",
+                            className="bs-100pct rounded-3 custom-border",
                         ),
                     ],
                     md=3,
@@ -138,10 +141,10 @@ app.layout = dbc.Container(
                         [
                             dcc.Graph(
                                 id="radar-graph",
-                                className="w-100 h-100",
+                                className="w-95 h-95",
                             ),
                         ],
-                        className="bs-100pct rounded-2",
+                        className="bs-100pct rounded-3 custom-border",
                     ),
                     md=3,
                 ),
@@ -174,12 +177,8 @@ app.layout = dbc.Container(
                     dcc.Textarea(
                         id="job-description",
                         placeholder="Cut and paste job description, or enter Job URL here...",
-                        style={
-                            "width": "100%",
-                            "height": "100%",
-                            "padding": "10px",
-                            "boxShadow": "rgba(0, 0, 0, 0.24) 0px 3px 8px",
-                        },
+                        # className="w-100 h-100 p-3 rounded-3",
+                        className="bs-100pct p-3 rounded-3 w-100",
                     ),
                     md=6,
                 ),
@@ -190,13 +189,10 @@ app.layout = dbc.Container(
                             [
                                 html.Img(
                                     id="word-cloud-jd",
-                                    style={
-                                        "width": "100%",
-                                        "height": "100%",
-                                    },
+                                    className="w-95 h-95",
                                 ),
                             ],
-                            className="bs-100pct",
+                            className="bs-100pct rounded-3 custom-border",
                         ),
                     ],
                     md=3,
@@ -227,6 +223,7 @@ app.layout = dbc.Container(
                                         "textAlign": "left",
                                         "marginLeft": "20px",
                                         "marginBottom": "5px",
+                                        "padding": "5px",
                                     },
                                 ),
                                 # Insert the new slider here
@@ -241,7 +238,7 @@ app.layout = dbc.Container(
                                     },
                                 ),
                             ],
-                            className="bs-100pct",
+                            className="bs-100pct rounded-3 custom-border",
                         ),
                     ],
                     md=3,
@@ -468,7 +465,7 @@ def update_radar_graph(n_clicks, threshold, cv_text, job_description):
             return match_percentage
 
         similarity_score = calculate_match_percentage(cv_text, job_description)
-        similarity_score_text = f"{similarity_score:.2f}%"
+        similarity_score_text = f"{similarity_score:.0f}%"
 
         # Use the threshold value from the slider to set the color
         similarity_score_color = "green" if similarity_score >= threshold else "red"
