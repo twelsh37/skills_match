@@ -116,7 +116,7 @@ app.layout = dbc.Container(
                     dcc.Textarea(
                         id="cv-text",
                         placeholder="CV text will appear here...",
-                        className="bs-100pct p-3 rounded-3 w-100",
+                        className="bs-100pct p-3 rounded-3 w-100 h-100",
                     ),
                     md=6,
                 ),
@@ -127,7 +127,7 @@ app.layout = dbc.Container(
                             [
                                 html.Img(
                                     id="word-cloud",
-                                    className="w-95 h-95",
+                                    className="w-100 h-100",
                                 )
                             ],
                             className="bs-100pct rounded-3 custom-border",
@@ -141,14 +141,16 @@ app.layout = dbc.Container(
                         [
                             dcc.Graph(
                                 id="radar-graph",
-                                className="w-95 h-95",
+                                className="w-100 h-100",
                             ),
                         ],
-                        className="bs-100pct rounded-3 custom-border",
+                        className="bs-35vh rounded-3 custom-border",
                     ),
                     md=3,
                 ),
-            ]
+            ],
+            className="h-100",
+            # style={"height": "50%"},
         ),  # ROW END
         # Row of two columns. The first column is the job description text area. The second column is the similarity
         # score.
@@ -177,8 +179,7 @@ app.layout = dbc.Container(
                     dcc.Textarea(
                         id="job-description",
                         placeholder="Cut and paste job description, or enter Job URL here...",
-                        # className="w-100 h-100 p-3 rounded-3",
-                        className="bs-100pct p-3 rounded-3 w-100",
+                        className="bs-100pct p-3 rounded-3 w-100 h-100",
                     ),
                     md=6,
                 ),
@@ -189,7 +190,7 @@ app.layout = dbc.Container(
                             [
                                 html.Img(
                                     id="word-cloud-jd",
-                                    className="w-95 h-95",
+                                    className="w-100 h-100",
                                 ),
                             ],
                             className="bs-100pct rounded-3 custom-border",
@@ -244,7 +245,8 @@ app.layout = dbc.Container(
                     md=3,
                 ),
             ],
-            style={"height": "46%"},
+            className="h-100",
+            # style={"height": "50%"},
         ),  # ROW END
         # Row of two columns. The first column is the analyze button. The second column is the clear button.
         dbc.Row(
