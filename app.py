@@ -126,7 +126,7 @@ app.layout = dbc.Container(
                         dbc.Card(
                             [
                                 html.Div(
-                                    "No image uploaded yet", id="word-cloud-placeholder"
+                                    "Awaiting analysis run", id="word-cloud-placeholder"
                                 ),
                                 html.Img(
                                     id="word-cloud",
@@ -145,15 +145,27 @@ app.layout = dbc.Container(
                             dcc.Graph(
                                 id="radar-graph",
                                 className="w-100 h-100",
+                                style={"display": "none", "height": "500px"},
+                            ),
+                            html.Div(
+                                id="no-data-message",
+                                children=["Awaiting analysis run"],
+                                style={
+                                    "display": "flex",
+                                    "justifyContent": "center",
+                                    "alignItems": "center",
+                                    "fontSize": "20pt",
+                                    "height": "100%",
+                                },
                             ),
                         ],
                         className="bs-100pct rounded-3 custom-border",
-                    ),
+                    ),  # dbc.card closing parenthesis here
                     md=3,
                 ),
             ],
             className="h-100",
-            # style={"height": "50%"},
+            # style={"height": "100%"},
         ),  # ROW END
         # Row of two columns. The first column is the job description text area. The second column is the similarity
         # score.
@@ -192,7 +204,7 @@ app.layout = dbc.Container(
                         dbc.Card(
                             [
                                 html.Div(
-                                    "No image uploaded yet",
+                                    "Awaiting analysis run",
                                     id="word-cloud-jd-placeholder",
                                 ),
                                 html.Img(
@@ -430,7 +442,12 @@ def update_cv_text(contents, filename):
 
 
 @app.callback(
-    [Output("radar-graph", "figure"), Output("similarity-score", "children")],
+    [
+        Output("radar-graph", "figure"),
+        Output("similarity-score", "children"),
+        Output("radar-graph", "style"),
+        Output("no-data-message", "style"),
+    ],
     [Input("analyze-button", "n_clicks"), Input("threshold-slider", "value")],
     [State("cv-text", "value"), State("job-description", "value")],
 )
@@ -492,19 +509,28 @@ def update_radar_graph(n_clicks, threshold, cv_text, job_description):
         img_bytes = BytesIO()
         wordcloud_img.save(img_bytes, format="PNG")
 
-        return fig, similarity_score_html
+        # If data available, hide no-data-message and show the graph
+        return fig, similarity_score_html, {"display": "block"}, {"display": "none"}
 
     return (
         go.Figure(),
         html.H4(
-            "0%",
+            "Awaiting Analysis run",
             style={
-                "color": "red",
+                "color": "black",
                 "font-family": "Arial",
-                "font-size": "128px",
+                "font-size": "20px",
                 "text-align": "center",
             },
         ),
+        {"display": "none"},
+        {
+            "display": "flex",
+            "justifyContent": "center",
+            "alignItems": "center",
+            "fontSize": "20px",
+            "height": "100%",
+        },
     )
 
 
