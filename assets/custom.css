@@ -1,4 +1,10 @@
-.fuckyou{
-    fontsize: 40px;
-    color: blue;
+/* 25vh height*/
+.h-vh-35 {
+    height: 35vh;
+}
+
+/* 35vh, box shadow */
+.bs-35vh{
+    height: 35vh;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
