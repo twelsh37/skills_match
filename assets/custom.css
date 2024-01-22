@@ -3,14 +3,13 @@ body {
     background-color: rgba(149, 149, 149, 0.06);
 }
 
-
 /* 25vh height*/
 .h-vh-35 {
     height: 35vh;
 }
 
 /* 35vh, box shadow */
-.bs-100pct{
+.bs-100pct {
     height: 100%;
     width: 100%;
     overflow: hidden;
@@ -18,7 +17,7 @@ body {
 }
 
 /* 35vh, box shadow */
-.bs-35vh{
+.bs-35vh {
     height: 35vh;
     overflow: hidden;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
@@ -31,4 +30,29 @@ body {
 /* Upload bar on hover colour change */
 .upload-hover:hover {
     background-color: rgba(0, 123, 255, 0.1); /* light blue background on hover */
+}
+
+.cv-jd {
+    /*display: absolute;*/
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    height: 550px;
+}
+
+.sim-score {
+    color: red;
+    font-family: Arial;
+    font-size: 128px;
+    text-align: center;
+}
+
+.html-sim-score {
+    display: absolute;
+    justify-content: center;
+    align-items: center;
+    color: black;
+    font-family: Arial;
+    font-size: 128px;
+    height: 33vh;
 }
