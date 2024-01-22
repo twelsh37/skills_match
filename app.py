@@ -125,10 +125,13 @@ app.layout = dbc.Container(
                     [
                         dbc.Card(
                             [
+                                html.Div(
+                                    "No image uploaded yet", id="word-cloud-placeholder"
+                                ),
                                 html.Img(
                                     id="word-cloud",
-                                    className="w-100 h-100",
-                                )
+                                    className="w-100 h-100 p-2",
+                                ),
                             ],
                             className="bs-100pct rounded-3 custom-border",
                         ),
@@ -144,7 +147,7 @@ app.layout = dbc.Container(
                                 className="w-100 h-100",
                             ),
                         ],
-                        className="bs-35vh rounded-3 custom-border",
+                        className="bs-100pct rounded-3 custom-border",
                     ),
                     md=3,
                 ),
@@ -156,15 +159,15 @@ app.layout = dbc.Container(
         # score.
         dbc.Row(
             [
-                dbc.Col(html.H4("Job Description", className="m-2"), md=6),
+                dbc.Col(html.H4("Job Description", className="m-2 mt-3"), md=6),
                 dbc.Col(
-                    html.H4("Job Description Word Cloud", className="m-2"),
+                    html.H4("Job Description Word Cloud", className="m-2 mt-3"),
                     md=3,
                 ),
                 dbc.Col(
                     html.H4(
                         "Percentage Match",
-                        className="m-2",
+                        className="m-2 mt-3",
                     ),
                     md=3,
                 ),
@@ -188,9 +191,13 @@ app.layout = dbc.Container(
                     [
                         dbc.Card(
                             [
+                                html.Div(
+                                    "No image uploaded yet",
+                                    id="word-cloud-jd-placeholder",
+                                ),
                                 html.Img(
                                     id="word-cloud-jd",
-                                    className="w-100 h-100",
+                                    className="w-100 h-100 p-2",
                                 ),
                             ],
                             className="bs-100pct rounded-3 custom-border",
@@ -212,8 +219,8 @@ app.layout = dbc.Container(
                                         "alignItems": "center",
                                         "color": "black",
                                         "fontFamily": "Arial",
-                                        "fontSize": "calc(80vh * 0.8)",  # 80% of the card's height
-                                        "height": "35vh",  # Set the height of the card
+                                        "fontSize": "calc(23vh + 3vw)",  # 80% of the card's height
+                                        "height": "33vh",  # Set the height of the card
                                     },
                                 ),
                                 # Insert the new H4 label with padding here
@@ -511,7 +518,11 @@ def update_buttons(cv_text, job_description):
 
 
 @app.callback(
-    Output("word-cloud", "src"),
+    [
+        Output("word-cloud", "src"),
+        Output("word-cloud", "style"),
+        Output("word-cloud-placeholder", "children"),
+    ],
     [Input("analyze-button", "n_clicks")],
     [State("cv-text", "value")],
 )
@@ -524,7 +535,20 @@ def update_word_cloud(n_clicks, cv_text):
     :return: Base64 encoded image source if successful, None otherwise
     """
     if n_clicks is None:
-        raise PreventUpdate
+        return (
+            None,
+            {"display": "none"},
+            html.Div(
+                "Awaiting analysis run",
+                style={
+                    "display": "flex",
+                    "justifyContent": "center",
+                    "alignItems": "center",
+                    "fontSize": "20px",
+                    "height": "550px",
+                },
+            ),
+        )
 
     try:
         if cv_text is not None and "http" in cv_text:
@@ -537,14 +561,64 @@ def update_word_cloud(n_clicks, cv_text):
             img_bytes = img_bytes.getvalue()
             wordcloud_img_b64 = base64.b64encode(img_bytes).decode()
             src = "data:image/png;base64,{}".format(wordcloud_img_b64)
-            return src
+            return src, {"display": "block"}, ""
     except Exception as e:
         print(f"An error occurred: {e}")
-    return None
+    return (
+        None,
+        {"display": "none"},
+        html.Div(
+            "Awaiting analysis run",
+            style={
+                "display": "flex",
+                "justifyContent": "center",
+                "alignItems": "center",
+                "fontSize": "20px",
+                "height": "550px",
+            },
+        ),
+    )
+
+
+# @app.callback(
+#     Output("word-cloud", "src"),
+#     [Input("analyze-button", "n_clicks")],
+#     [State("cv-text", "value")],
+# )
+# def update_word_cloud(n_clicks, cv_text):
+#     """
+#     Update word cloud when the analyze button is clicked.
+#
+#     :param n_clicks: Number of times the button has been clicked
+#     :param cv_text: Text from which to generate the word cloud
+#     :return: Base64 encoded image source if successful, None otherwise
+#     """
+#     if n_clicks is None:
+#         raise PreventUpdate
+#
+#     try:
+#         if cv_text is not None and "http" in cv_text:
+#             cv_text = extract_text_from_url(cv_text)
+#
+#         if cv_text:
+#             wordcloud_img = generate_wordcloud(cv_text)
+#             img_bytes = BytesIO()
+#             wordcloud_img.save(img_bytes, format="PNG")
+#             img_bytes = img_bytes.getvalue()
+#             wordcloud_img_b64 = base64.b64encode(img_bytes).decode()
+#             src = "data:image/png;base64,{}".format(wordcloud_img_b64)
+#             return src
+#     except Exception as e:
+#         print(f"An error occurred: {e}")
+#     return None
 
 
 @app.callback(
-    Output("word-cloud-jd", "src"),
+    [
+        Output("word-cloud-jd", "src"),
+        Output("word-cloud-jd", "style"),
+        Output("word-cloud-jd-placeholder", "children"),
+    ],
     Input("analyze-button", "n_clicks"),
     State("job-description", "value"),
 )
@@ -560,7 +634,20 @@ def update_word_cloud_jd(n_clicks, job_description):
     str: The source of the word cloud image.
     """
     if n_clicks is None:
-        raise PreventUpdate
+        return (
+            None,
+            {"display": "none"},
+            html.Div(
+                "Awaiting analysis run",
+                style={
+                    "display": "flex",
+                    "justifyContent": "center",
+                    "alignItems": "center",
+                    "fontSize": "20px",
+                    "height": "550px",
+                },
+            ),
+        )
 
     try:
         if n_clicks > 0 and job_description:
@@ -572,10 +659,58 @@ def update_word_cloud_jd(n_clicks, job_description):
             img_bytes = img_bytes.getvalue()
             wordcloud_img_b64 = base64.b64encode(img_bytes).decode()
             src = "data:image/png;base64,{}".format(wordcloud_img_b64)
-            return src
+            return src, {"display": "block"}, ""
     except Exception as e:
         print(f"An error occurred: {e}")
-        return None
+    return (
+        None,
+        {"display": "none"},
+        html.Div(
+            "Awaiting analysis run",
+            style={
+                "display": "flex",
+                "justifyContent": "center",
+                "alignItems": "center",
+                "fontSize": "20px",
+                "height": "550px",
+            },
+        ),
+    )
+
+
+# @app.callback(
+#     Output("word-cloud-jd", "src"),
+#     Input("analyze-button", "n_clicks"),
+#     State("job-description", "value"),
+# )
+# def update_word_cloud_jd(n_clicks, job_description):
+#     """
+#     Updates the word cloud based on the job description.
+#
+#     Parameters:
+#     n_clicks (int): The number of times the analyze button has been clicked.
+#     job_description (str): The job description from which to generate a word cloud.
+#
+#     Returns:
+#     str: The source of the word cloud image.
+#     """
+#     if n_clicks is None:
+#         raise PreventUpdate
+#
+#     try:
+#         if n_clicks > 0 and job_description:
+#             if "http" in job_description:
+#                 job_description = extract_text_from_url(job_description)
+#             wordcloud_img = generate_wordcloud_jd(job_description)
+#             img_bytes = BytesIO()
+#             wordcloud_img.save(img_bytes, format="PNG")
+#             img_bytes = img_bytes.getvalue()
+#             wordcloud_img_b64 = base64.b64encode(img_bytes).decode()
+#             src = "data:image/png;base64,{}".format(wordcloud_img_b64)
+#             return src
+#     except Exception as e:
+#         print(f"An error occurred: {e}")
+#         return None
 
 
 if __name__ == "__main__":
