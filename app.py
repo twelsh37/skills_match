@@ -40,6 +40,7 @@ nltk.download("punkt")
 
 app = app
 
+
 def extract_text_from_cv(contents, filename):
     """
     Extract text from CV in Word or PDF format.
