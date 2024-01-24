@@ -542,23 +542,7 @@ def update_buttons(cv_text, job_description):
     return empty_fields, empty_fields
 
 
-@app.callback(
-    [
-        Output("word-cloud", "src"),
-        Output("word-cloud", "style"),
-        Output("word-cloud-placeholder", "children"),
-    ],
-    [Input("analyze-button", "n_clicks")],
-    [State("cv-text", "value")],
-)
-def update_word_cloud(n_clicks, cv_text):
-    """
-    Update word cloud when the analyze button is clicked.
-
-    :param n_clicks: Number of times the button has been clicked
-    :param cv_text: Text from which to generate the word cloud
-    :return: Base64 encoded image source if successful, None otherwise
-    """
+def handle_analysis_run(n_clicks):
     if n_clicks is None:
         return (
             None,
@@ -574,35 +558,45 @@ def update_word_cloud(n_clicks, cv_text):
                 },
             ),
         )
+    return None
 
+
+def handle_extraction(text):
+    if text is not None and "http" in text:
+        text = extract_text_from_url(text)
+    return text
+
+
+def handle_wordcloud_generation(wordcloud_img):
+    img_bytes = BytesIO()
+    wordcloud_img.save(img_bytes, format="PNG")
+    img_bytes = img_bytes.getvalue()
+    wordcloud_img_b64 = base64.b64encode(img_bytes).decode()
+    src = "data:image/png;base64,{}".format(wordcloud_img_b64)
+    return src, {"display": "block"}, ""
+
+
+@app.callback(
+    [
+        Output("word-cloud", "src"),
+        Output("word-cloud", "style"),
+        Output("word-cloud-placeholder", "children"),
+    ],
+    Input("analyze-button", "n_clicks"),
+    State("cv-text", "value"),
+)
+def update_word_cloud(n_clicks, cv_text):
+    run_status = handle_analysis_run(n_clicks)
+    if run_status is not None:
+        return run_status
     try:
-        if cv_text is not None and "http" in cv_text:
-            cv_text = extract_text_from_url(cv_text)
-
+        cv_text = handle_extraction(cv_text)
         if cv_text:
             wordcloud_img = generate_wordcloud(cv_text)
-            img_bytes = BytesIO()
-            wordcloud_img.save(img_bytes, format="PNG")
-            img_bytes = img_bytes.getvalue()
-            wordcloud_img_b64 = base64.b64encode(img_bytes).decode()
-            src = "data:image/png;base64,{}".format(wordcloud_img_b64)
-            return src, {"display": "block"}, ""
+            return handle_wordcloud_generation(wordcloud_img)
     except Exception as e:
         print(f"An error occurred: {e}")
-    return (
-        None,
-        {"display": "none"},
-        html.Div(
-            "Awaiting analysis run",
-            style={
-                "display": "flex",
-                "justifyContent": "center",
-                "alignItems": "center",
-                "fontSize": "20px",
-                "height": "550px",
-            },
-        ),
-    )
+    return handle_analysis_run(None)
 
 
 @app.callback(
@@ -615,60 +609,17 @@ def update_word_cloud(n_clicks, cv_text):
     State("job-description", "value"),
 )
 def update_word_cloud_jd(n_clicks, job_description):
-    """
-    Updates the word cloud based on the job description.
-
-    Parameters:
-    n_clicks (int): The number of times the analyze button has been clicked.
-    job_description (str): The job description from which to generate a word cloud.
-
-    Returns:
-    str: The source of the word cloud image.
-    """
-    if n_clicks is None:
-        return (
-            None,
-            {"display": "none"},
-            html.Div(
-                "Awaiting analysis run",
-                style={
-                    "display": "flex",
-                    "justifyContent": "center",
-                    "alignItems": "center",
-                    "fontSize": "20px",
-                    "height": "550px",
-                },
-            ),
-        )
-
+    run_status = handle_analysis_run(n_clicks)
+    if run_status is not None:
+        return run_status
     try:
-        if n_clicks > 0 and job_description:
-            if "http" in job_description:
-                job_description = extract_text_from_url(job_description)
+        job_description = handle_extraction(job_description)
+        if job_description:
             wordcloud_img = generate_wordcloud_jd(job_description)
-            img_bytes = BytesIO()
-            wordcloud_img.save(img_bytes, format="PNG")
-            img_bytes = img_bytes.getvalue()
-            wordcloud_img_b64 = base64.b64encode(img_bytes).decode()
-            src = "data:image/png;base64,{}".format(wordcloud_img_b64)
-            return src, {"display": "block"}, ""
+            return handle_wordcloud_generation(wordcloud_img)
     except Exception as e:
         print(f"An error occurred: {e}")
-    return (
-        None,
-        {"display": "none"},
-        html.Div(
-            "Awaiting analysis run",
-            # className="cv-jd",
-            style={
-                "display": "flex",
-                "justifyContent": "center",
-                "alignItems": "center",
-                "fontSize": "20px",
-                "height": "550px",
-            },
-        ),
-    )
+    return handle_analysis_run(None)
 
 
 if __name__ == "__main__":
