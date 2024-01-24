@@ -56,7 +56,7 @@ app.layout = dbc.Container(
                 ),
             ]
         ),  # ROW END
-        # Upload CV area. Takes word or PDF documents
+        # Upload CV area. Takes Word or PDF documents
         html.Div(
             dbc.Row(
                 [
@@ -78,7 +78,7 @@ app.layout = dbc.Container(
                                 "boxShadow": "rgba(0, 0, 0, 0.24) 0px 3px 8px",
                                 "backgroundColor": "white",
                             },
-                            # causes bar to change colour when a file is dragged over it
+                            # Causes bar to change colour when a file is dragged over it
                             style_active={
                                 "backgroundColor": "rgba(39, 213, 245, 0.12)",
                                 "borderColor": "green",
@@ -90,7 +90,8 @@ app.layout = dbc.Container(
                 ]
             ),  # ROW END
         ),
-        # Row of two columns. The first column is the CV text area. The second column is the radar graph.
+        # Row of three columns. All H4 names. The first column is the CV text area. The second column is the CV word
+        # cloud, and the third column is the the radar graph.
         dbc.Row(
             [
                 dbc.Col(
@@ -107,7 +108,8 @@ app.layout = dbc.Container(
                 ),
             ]
         ),  # ROW END
-        # Row of two columns. The first column is the CV text area. The second column is the radar graph.
+        # Row of three columns. The first column is the CV text area. The second column is the CV Word cloud, and the
+        # third column is the radar graph.
         dbc.Row(
             [
                 # CV text area
@@ -166,8 +168,8 @@ app.layout = dbc.Container(
             className="h-100",
             # style={"height": "100%"},
         ),  # ROW END
-        # Row of two columns. The first column is the job description text area. The second column is the similarity
-        # score.
+        # Row of three columns. All h4 labels. The first column is the job description. The second column is the Job
+        # description word cloud, and the third is the percentage match between the CV nd Job description score.
         dbc.Row(
             [
                 dbc.Col(html.H4("Job Description", className="m-2 mt-3"), md=6),
@@ -184,8 +186,8 @@ app.layout = dbc.Container(
                 ),
             ]
         ),  # ROW END
-        # Row of two columns. The first column is the job description text area. The second column is the similarity
-        # score.
+        # Row of three columns. The first column is the job description text area. The second column is the Job
+        # description word cloud, and the third is the percentage match between the CV nd Job description score.
         dbc.Row(
             [
                 # Job description text area
@@ -309,6 +311,7 @@ app.layout = dbc.Container(
             # style={"marginBottom": "80px"},
             className="g-0",
         ),  # ROW END
+        # copyright bar at bottom of page
         dbc.Row(
             dbc.Col(
                 [
