@@ -146,7 +146,7 @@ app.layout = dbc.Container(
                             dcc.Graph(
                                 id="radar-graph",
                                 className="w-100 h-100",
-                                style={"display": "none", "height": "500px"},
+                                style={"display": "none", "height": "35vh"},
                             ),
                             html.Div(
                                 id="no-data-message",
@@ -155,8 +155,8 @@ app.layout = dbc.Container(
                                     "display": "flex",
                                     "justifyContent": "center",
                                     "alignItems": "center",
-                                    "fontSize": "20pt",
-                                    "height": "100%",
+                                    "fontSize": "20px",
+                                    "height": "35vh",
                                 },
                             ),
                         ],
@@ -165,8 +165,7 @@ app.layout = dbc.Container(
                     md=3,
                 ),
             ],
-            className="h-100",
-            # style={"height": "100%"},
+            className="viewHeight35",
         ),  # ROW END
         # Row of three columns. All h4 labels. The first column is the job description. The second column is the Job
         # description word cloud, and the third is the percentage match between the CV nd Job description score.
