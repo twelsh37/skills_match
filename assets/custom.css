@@ -56,3 +56,8 @@ body {
     font-size: 128px;
     height: 33vh;
 }
+
+/* Set viewHeight to 35*/
+.viewHeight35 {
+    height: 35vh;
+}
